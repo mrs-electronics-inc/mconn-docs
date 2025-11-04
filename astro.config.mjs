@@ -8,7 +8,7 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			plugins: [],
-			title: 'Mconn Docs',
+			title: 'Mconn Documentation',
 			social: [
 				{ icon: 'github', label: 'GitHub', href: 'https://github.com/mrs-electronics-inc/mconn-docs' },
 			],
