@@ -1,6 +1,6 @@
 {
-    "name": "MRS Developers",
-    "short_name": "MRS Devs",
+    "name": "MConn Documentation",
+    "short_name": "MConn Docs",
     "icons": [
         {
             "src": "/web-app-manifest-192x192.png",
