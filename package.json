@@ -1,4 +1,5 @@
 {
+  "name": "mconn-docs",
   "private": true,
   "type": "module",
   "scripts": {
