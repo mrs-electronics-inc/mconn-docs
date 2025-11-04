@@ -8,7 +8,7 @@ Starlight looks for `.md` or `.mdx` files in the `src/content/docs/` directory. 
 
 Images can be added to `src/assets/` and embedded in Markdown with a relative link.
 
-Static assets, like favicons, can be placed in the `static/` directory.
+Static assets, like favicons, can be placed in the `public/` directory.
 
 ## Commands
 
@@ -18,4 +18,4 @@ All commands are run from the root of the project, from a terminal:
 | :-------------- | :------------------------------------------ |
 | `npm install`   | Installs dependencies                       |
 | `npm run dev`   | Starts local dev server at `localhost:4321` |
-| `npm run build` | Build your production site to `./public/`   |
+| `npm run build` | Build your production site to `dist/`       |
