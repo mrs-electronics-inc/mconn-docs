@@ -1,13 +1,11 @@
 ---
 title: MConn Display Documentation
-description: Add your description here.
+description: MConn Display Documentation home page.
 template: splash
 hero:
   tagline: The MConn 7", MConn 10", and MConn 12.3" are the new generation of Connected Displays by MRS Electronic. They come with a powerful 32-bit multi-core ARM Cortex-A9 processor and can be programmed for Embedded Linux using Qt to meet your specific requirements. <br><br> The Development Documentation will help you set up your MConn Display
   image:
-    file: ../../assets/MConn-Displays.png
-    width: 800
-    height: 800
+    file: ../../assets/MConn-Display.png
   actions:
     - text: Get Started
       link: /getting-started/example
@@ -20,15 +18,9 @@ hero:
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-## Useful Links
-
-MRS MConn Quick Access links.
-
-<CardGrid stagger>
-	<Card title="MConn Resources" icon="seti:json">
-		<LinkCard title="MConn 7 Datasheet" href="https://www.mrs-electronics.com/fileadmin_us/products/datasheets/MConn_7_Datasheet.pdf" target="_blank"/>
-		<LinkCard title="MConn 10 Datasheet" href="https://www.mrs-electronics.com/fileadmin_us/products/datasheets/MConn_10_1_Datasheet.pdf" target="_blank"/>
-		<LinkCard title="MConn 12.3 Datasheet" href="https://www.mrs-electronics.com/fileadmin_us/products/datasheets/MConn_12_3_Datasheet.pdf" target="_blank"/>
-		<LinkCard title="MRS Qt SDK" href="https://github.com/mrs-electronics-inc/mrs-sdk-qt" target="_blank"/>
-	</Card>
-</CardGrid>
+<Card title="MConn Display Resources" icon="seti:json">
+	<LinkCard title="MConn 7 Datasheet" href="https://www.mrs-electronics.com/fileadmin_us/products/datasheets/MConn_7_Datasheet.pdf" target="_blank"/>
+	<LinkCard title="MConn 10 Datasheet" href="https://www.mrs-electronics.com/fileadmin_us/products/datasheets/MConn_10_1_Datasheet.pdf" target="_blank"/>
+	<LinkCard title="MConn 12.3 Datasheet" href="https://www.mrs-electronics.com/fileadmin_us/products/datasheets/MConn_12_3_Datasheet.pdf" target="_blank"/>
+	<LinkCard title="MRS Qt SDK" href="https://github.com/mrs-electronics-inc/mrs-sdk-qt" target="_blank"/>
+</Card>
