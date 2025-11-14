@@ -27,15 +27,32 @@ export default defineConfig({
 				},
 				{
 					label: "MConn Programming",
-					autogenerate: { directory: "mconn-programming" },
+					items: [
+						{
+							label: "Qt QML",
+          					link: "/mconn-programming/qt-qml"
+						},
+						{
+							label: "MConn Modules Guide",
+							autogenerate: { directory: "mconn-programming/mconn-modules-guide" }
+						},
+						{
+							label: "Exploring Reference App",
+							autogenerate: { directory: "mconn-programming/exploring-reference-app" }
+						}
+					]
 				},
 				{
 					label: "Starting User Application",
 					autogenerate: { directory: "starting-user-application" },
 				},
 				{
-					label: "Other",
-					autogenerate: { directory: "other" },
+					label: "Technical Support",
+					autogenerate: { directory: "technical-support" },
+				},
+				{
+					label: "Downloads",
+					autogenerate: { directory: "downloads" },
 				},
 			],
 		}),
