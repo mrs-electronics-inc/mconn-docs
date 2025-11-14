@@ -1,0 +1,88 @@
+---
+title: Starting User Application
+description: Instructions for setting up application
+---
+
+# Starting User Application
+This section details the two methods used to start the user application, i.e., manually and automatically.
+
+## Starting User Application Manually
+The user application can be started manually.
+
+### Primary Screen
+To start the user application manually follow the steps below:
+
+1. Transfer the your-app executable to the /opt/bin location on the Display, using the USB.
+```
+$ mount -o remount,rw /
+$ cp /run/media/sda1/your-app /opt/bin
+$ sync
+$ mount -o remount,ro /
+```
+2. Add the permission to execute the application with the following commands:
+```
+$ cd /opt/bin
+$ chmod +x your-app
+$ ./your-app
+```
+
+## Starting User Application Automatically
+Choosing a startup mode is essential to starting the user application automatically.
+:::caution
+It is crucial to choose **only one startup mode at a time**. Enabling both can create a race condition, causing the system to behave unexpectedly.
+:::
+
+### Normal Startup Mode
+In Normal Startup mode, the user application starts when most of the elements are initialized. Because of this, the system boots a bit slowly.
+
+To start the application in the Normal Startup mode, follow the steps below:
+
+1. Transfer the your-app executable to the /opt/bin location on the Display, using the USB.
+```
+$ mount -o remount,rw /
+$ cp /run/media/sda1/your-app /opt/bin
+```
+2. Create a link file of the user application.
+```
+$ cd /opt/bin
+$ ln -sf your-app normal.app.0
+```
+3. Enable the systemd service.
+```
+$ systemctl enable startup-app@0
+$ sync
+$ mount -o remount,ro /
+```
+The application starts in Normal Startup mode.
+
+### Early Startup Mode
+The Early Startup mode is an optional startup method that speeds up the user application's start time. When selected, your app can starts in less than 5 seconds. It is important to note that some interfaces and modules may not be available in this mode. It is the developer's responsibility to make sure that certain functionalities are available at the early start of the boot process.
+:::caution
+In **Early Startup mode**, some components are not yet initialized (such as **CANBUS**, ** GPS**, and others).
+:::
+:::danger
+Ensure that your application does not use ```shutdown``` or ```reboot``` commands at this stage. Otherwise, the system may enter a boot loop and become inaccessible.
+:::
+To enable the Early Startup mode, follow the steps below:
+
+1. Transfer the your-app executable to the /opt/bin location on the Display, using the USB.
+```
+$ mount -o remount,rw /
+$ cp /run/media/sda1/your-app /opt/bin
+```
+2. Create a link file for the user application.
+```
+$ cd /opt/bin
+$ ln -sf your-app early.app.0
+$ sync
+$ mount -o remount,ro /
+```
+The application starts in Early Startup mode.
+
+:::tip
+Display reboot is required for the automatic startup. To enable automatic app startup, ensure there is a **soft link**  of the application in the location: ```/opt/bin``` with the name **early.app.0** or **normal.app.0**.
+::: 
+
+:::note
+Qt Creator users can deploy the application directly to the Display using **SSH over Ethernet**. Ensure that the Display is connected to the same network and the target IP (192.168.57.1) and credentials are configured in Qt Creator.
+::: 
