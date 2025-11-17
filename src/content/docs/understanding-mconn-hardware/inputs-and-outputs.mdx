@@ -32,7 +32,7 @@ $ cat /sys/class/gpio/gpio91/value // Read the value of the input
 To read the state of digital inputs in the **Reference App** via C++, use the following code:
 ```
 // Reference App I/O Module
-int input = io->get_channel_value(“INPUT1”); // Read Digital Input
+int input = io->get_channel_value("INPUT1"); // Read Digital Input
 ```
 ### Analog Inputs
 The display has six **0-12V** analog inputs. The built-in co-processor reads the analog inputs (Read more about it in the [Coprocessor section](../embedded-devices#coprocessor)) and then passes to the main processor via UART or CAN. The assigned pins for analog inputs on AMPSEAL connector are 9,10, 17, 19, 20, and 22.
@@ -43,7 +43,7 @@ analog_input = new adc("/dev/ttymxc4");
 connect(analog_input, SIGNAL(adc_ready(int, int)), this, SLOT(adc_ready(int, int)));
 void demoApp::adc_ready(int channel, int value)
 {
-	qDebug() << “adc” << channel << “ = “ << value;
+	qDebug() << "adc" << channel << " = " << value;
 }
 ```
 ## Outputs
@@ -68,6 +68,6 @@ $ echo 0 > /sys/class/gpio/gpio162/value	// Turn output off
 Use the code below to control the digital outputs in the **Reference App** via C++:
 ```
 analog_input = new adc("/dev/ttymxc4");
-io->set_channel_value(“OUTPUT3”, true);	// Turn output on
-io->set_channel_value(“OUTPUT3”, false);	// Turn output off
+io->set_channel_value("OUTPUT3", true);	// Turn output on
+io->set_channel_value("OUTPUT3", false);	// Turn output off
 ```
