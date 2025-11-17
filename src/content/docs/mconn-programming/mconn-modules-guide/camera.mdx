@@ -63,7 +63,7 @@ qmlRegisterType<Camera_C>("MRSComponents", 1, 0, "Camera");
 
 2. For analog camera, use the following code:
 ```
-//Create instance of camera set type to analog and in captureDevice specify analog camera device file, and upon component complete start stream 
+// Create instance of camera set type to analog and in captureDevice specify analog camera device file, and upon component complete start stream 
 Camera {
         id: analogCamSrc2
         type: "analog"
@@ -72,7 +72,7 @@ Camera {
             analogCamSrc2.startStream()
         }
     }
-Note: Do not create multiple instance of Camera with same analog camera device file.
+// Note: Do not create multiple instance of Camera with same analog camera device file.
 
 // Create instance of CameraPlayer that will render stream of camera, provide id of analog camera to its source field 
   CameraPlayer {
