@@ -151,7 +151,7 @@ Text {
     id: analogPin1Value
     text: Io_Q.adc1V.toFixed(1)  + "V"
     font.pixelSize: 20
-    color: "black" 
+    color: "black"
     anchors.centerIn: parent
     }
 ```
@@ -162,7 +162,7 @@ Text {
     id: value2
     text: Io_Q.digitalInput1Status
     font.pixelSize: 20
-    color: "black" 
+    color: "black"
     anchors.centerIn: parent
 }
 ```
@@ -189,37 +189,37 @@ Slider{
             topMargin: 60
             leftMargin: 50
         }
-        value: Io_Q.lcdBacklightctrl  
+        value: Io_Q.lcdBacklightctrl
         onValueChanged: Io_Q.setBacklight((screenBrightnessSlider.value * 100))
     }
 ```
 
 6. Set buzzer frequency and turn buzzer on and off.
 ```
-// Global properties place at root of qml file 
+// Global properties place at root of qml file
 property bool buzzerOn: false
 property int buzzerFrequencyMax: 15000
 property int buzzerFrequency: 0.2 * buzzerFrequencyMax
 
-// Slider to set frequency of buzzer   
+// Slider to set frequency of buzzer
 Slider{
         id: buzzerSlider
         height: parent.height * 0.6
         orientation: Qt.Vertical
         onValueChanged: {
             buzzerFrequency = buzzerSlider.value * buzzerFrequencyMax
-            if(buzzerOn) // based on global property 
+            if(buzzerOn) // based on global property
                 Io_Q.setBuzzer(true, buzzerFrequency)
         }
     }
 
-// Button to turn buzzer on and off 
+// Button to turn buzzer on and off
     Button{
-        checkable: true  
+        checkable: true
         onCheckedChanged: {
             buzzerOn = checked
             if(buzzerOn)
-                Io_Q.setBuzzer(true, buzzerFrequency) // frequency is set based on global property  
+                Io_Q.setBuzzer(true, buzzerFrequency) // frequency is set based on global property
             else
                 Io_Q.setBuzzer(false)
         }

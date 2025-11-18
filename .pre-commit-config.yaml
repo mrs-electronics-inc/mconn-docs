@@ -10,7 +10,8 @@ repos:
   - repo: local
     hooks:
       - id: prettier
-        name: prettier markdown
-        entry: npx prettier --write
-        language: node
-        files: "\\.(md|markdown)$"
+        name: Prettier
+        entry: npx prettier --write --ignore-unknown
+        language: system
+        files: \.(md|mdoc|markdoc)$
+        types_or: [markdown, text]
