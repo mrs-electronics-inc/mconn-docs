@@ -10,6 +10,7 @@ This section covers the details of the **Reference App**’s User Interface (UI)
 The following image represents the tabs of the **Reference App** and the relative description sections of each:
 
 ## Media Player Section
+
 The reference app provides music playback features, including play, pause, stop, and track progress. It comes with a pre-installed song file, and additional songs can also be added in /rw_data/ path in mconn. These song will be displayed in the song list along with cover art and can be played by clicking on it.
 
 ![Media Player](../../../../assets/Reference_App_Media_Player.png)
@@ -17,9 +18,11 @@ The reference app provides music playback features, including play, pause, stop,
 Refer to [Audio Player](../../mconn-modules-guide/audio-player) for more details.
 
 ## I/O Section
+
 The IO section provides functionality for controlling screen brightness, managing the buzzer, operating high-side drivers, and monitoring the values of digital and analog inputs. Details on each are as follows:
 
 ### Buzzer
+
 The display is equipped with a programmable buzzer, accessible through the I/O page. Users can turn the buzzer on or off by clicking the bell icon. Additionally, the buzzer frequency can be adjusted using the slider provided above the buzzer button.
 
 ![Buzzer Control](../../../../assets/Reference_App_IO_Buzzer.png)
@@ -28,10 +31,12 @@ The following function controls the buzzer and is accessible from C++ and QML:
 ```cpp
 Q_INVOKABLE void setBuzzer(bool status, uint frequency = 1000);
 ```
+
 - `status`: true to turn ON, false to turn OFF
 - `frequency`: Buzzer frequency in Hz (range: 0 to 15,000, default: 1000)
 
 ### Screen Brightness
+
 The brightness of the display can be adjusted from the **I/O section** of the Reference app using the **left slider**.
 Users can set a value between **0** and **100**.
 
@@ -41,9 +46,11 @@ The brightness can also be controlled programmatically using the following funct
 ```cpp
 Q_INVOKABLE void setBacklight(uint percent);
 ```
+
 - `percent`: Brightness level from 0 (minimum) to 100 (maximum)
 
 ### Analog Inputs
+
 The display is equipped with six **0–12V Analog Input** pins.
 The assigned pins for analog inputs on the **AMPSEAL Connector** are: **Pins 9, 10, 17, 19, 20, and 22**.
 (Refer to the figure for physical layout.)
@@ -63,31 +70,33 @@ Q_PROPERTY(double adc6V READ adc6V NOTIFY adc6VChanged)
 ```
 
 ### Digital Inputs
+
 The display is equipped with twelve **0–12V Digital Input** pins.
 The table below shows the GPIO numbers assigned to each digital input pin on the **AMPSEAL connector**.
 (Refer to the figure for the physical layout.)
 
 | **Pin** | **GPIO** | **Pin** | **GPIO** |
-|---------|---------|---------|---------|
-| 1       | 91      | 25      | 140     |
-| 2       | 117     | 28      | 2       |
-| 5       | 124     | 29      | 145     |
-| 8       | 134     | 31      | 116     |
-| 11      | 139     | 34      | 122     |
-| 12      | 144     | 35      | 136     |
+| ------- | -------- | ------- | -------- |
+| 1       | 91       | 25      | 140      |
+| 2       | 117      | 28      | 2        |
+| 5       | 124      | 29      | 145      |
+| 8       | 134      | 31      | 116      |
+| 11      | 139      | 34      | 122      |
+| 12      | 144      | 35      | 136      |
 
 In the UI, these digital inputs are represented by components **DL1** to **DL12**, each displaying the state of its respective input.
 
 ![Digital Inputs](../../../../assets/Reference_App_IO_DigitalInput.png)
 
 ### Digital outputs
+
 The display is equipped with 4 **digital high-side drivers**, each capable of sourcing up to **2A**.
 The table below shows the GPIO numbers assigned to these digital outputs on the **AMPSEAL Connector**.
 
 | **Pin** | **GPIO** | **Pin** | **GPIO** |
-|---------|---------|---------|---------|
-| 3       | 162     | 6       | 167     |
-| 4       | 163     | 7       | 200     |
+| ------- | -------- | ------- | -------- |
+| 3       | 162      | 6       | 167      |
+| 4       | 163      | 7       | 200      |
 
 ![Digital Outputs](../../../../assets/Reference_App_IO_DigitalOut.png)
 
@@ -107,10 +116,12 @@ Q_INVOKABLE void setDigitalOutput(uint pin, bool value);
 
 Refer to [IO Module](../../mconn-modules-guide/io-module) for more details.
 
-### Cameras 
+### Cameras
+
 The Reference app supports both **Analog** and **Ethernet** cameras for video display.
 
 #### Analog Cameras
+
 The display supports up to 4 **analog** cameras.
 
 To switch between different camera feeds, simply click on the **Analog Stream Video** UI element — this cycles through feeds from **Camera 1** to **Camera 4**.
@@ -153,6 +164,7 @@ CameraPlayer {
   - `/dev/video3`
 
 #### Ethernet Cameras
+
 The display also supports Ethernet cameras using H.264 video compression over UDP/RTP streaming.
 
 ![Ethernet Camera](../../../../assets/Reference_App_Ethernet_Camera.png)
@@ -188,6 +200,7 @@ CameraPlayer {
     }
 }
 ```
+
 Parameters:
 
 - `type`: Set to `rtsp` for Ethernet streaming.
@@ -220,11 +233,13 @@ Following are the commands to use the video player in QML:
         fillMode: VideoOutput.Stretch
       }
 ```
+
 :::tip
 Refer to [Video Player](../../mconn-modules-guide/video-player) Module for more details.
 :::
 
 ### Date Time Settings
+
 The Display comes with the functionality to set date and time. To access **Date and Time Setting** component, follow the steps below:
 
 - Open Control Panel by swiping down from the top.
@@ -241,6 +256,7 @@ The date must follow the **MM/DD/YYYY** format.
 :::
 
 ### Theme
+
 The MConn **Reference App** comes with two in-built contrasting themes, which by default, is the **Dark Theme**.
 
 The variable `REF_APP_THEME` when set to 0 or 1 corresponds to dark or light theme for the **Reference App**, respectively. To change the theme of the **Reference App**, tap on the toggle button in the **About** tab:

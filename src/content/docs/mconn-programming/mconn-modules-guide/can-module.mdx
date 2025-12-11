@@ -37,7 +37,7 @@ Alternatively, this signal emits a fragmented CAN message, providing an alternat
 void canFrameReceived(const can_frame &canframe);    // recommended 
 void frameReceived(int canID, int dlc, int lowerBytes, int upperBytes);
 
-// Structue of can_frame from can.h part of linux SocketCAN 
+// Structue of can_frame from can.h part of linux SocketCAN
 
 struct can_frame {
  canid_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
@@ -116,15 +116,15 @@ Note: All message being receive by application will be receive in this slot, the
 //Create instance of can_frame  
 can_frame canSingleMessgFrame;
 
-// set dlc and can id 
-canSingleMessgFrame.can_dlc = 1;  
+// set dlc and can id
+canSingleMessgFrame.can_dlc = 1;
 canSingleMessgFrame.can_id = 0x200;
 
-// set data 
-uint64_t data = 1; // data to send 
+// set data
+uint64_t data = 1; // data to send
 memcpy(canSingleMessgFrame.data, &data, sizeof(data));
 
-// call send once  
+// call send once
 m_can0->sendOnce(canSingleMessgFrame);
 ```
 
@@ -133,16 +133,16 @@ m_can0->sendOnce(canSingleMessgFrame);
 // Create initial can_frame
 can_frame canCyclicalMessgFrame;
 
-// set dlc, can id and data 
+// set dlc, can id and data
 canCyclicalMessgFrame.can_dlc = 1;
 canCyclicalMessgFrame.can_id = 0x300;
 uint64_t dataCyclical = 1; // data to send
 memcpy(canCyclicalMessgFrame.data, &dataCyclical, sizeof(dataCyclical));
 
-// Start cyclical message with specific interval 
+// Start cyclical message with specific interval
 m_can0->sendCyclical(canCyclicalMessgFrame,1000000); // every 10 second
 
-// Updating can cyclical message 
+// Updating can cyclical message
 dataCyclical = 10;
 memcpy(canCyclicalMessgFrame.data, &dataCyclical, sizeof(dataCyclical));
 m_can0->updateCyclical(canCyclicalMessgFrame);

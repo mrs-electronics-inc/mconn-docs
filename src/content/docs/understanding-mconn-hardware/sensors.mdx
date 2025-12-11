@@ -7,7 +7,7 @@ sidebar:
 
 The Display has several sensors that can be interfaced with your software application.
 
-## IMU – Accelerometer 
+## IMU – Accelerometer
 :::note
 Optional: Not available as standard option
 :::
@@ -30,7 +30,7 @@ imu->setSleepPower(0.02);
 imu->setGyroEnable(true);
 imu->setAccelEnable(true);
 imu->setCompassEnable(true);
-while (imu->IMURead()) 
+while (imu->IMURead())
 {
   RTIMU_DATA imuData = imu->getIMUData();
 }

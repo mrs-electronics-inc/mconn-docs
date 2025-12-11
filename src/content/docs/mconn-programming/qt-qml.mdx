@@ -133,7 +133,7 @@ qnx: target.path = /tmp/$${TARGET}/bin
 To:
 ```
 qnx: target.path = /rw_data/$${TARGET}/bin
-``` 
+```
 
 ### Default main.cpp of QT Application
 ```cpp
@@ -398,12 +398,12 @@ ApplicationWindow {
  width: 640
  height: 480
  Text {
- id :valueFromBackend 
+ id :valueFromBackend
  anchors.centerIn: parent
  text: myObject.name // binding with class property name , whenever this
-property changes in backend , this text also changes accordingly 
- } 
-} 
+property changes in backend , this text also changes accordingly
+ }
+}
 ```
 
 ### Q_INVOKABLE
@@ -423,7 +423,7 @@ public:
 vClass exposed to front end with setContextProperty:
 ```cpp
 MessageProvider messageProvider;
-// Exposing the MessageProvider instance as a context property 
+// Exposing the MessageProvider instance as a context property
 engine.rootContext()->setContextProperty("myMessageProvider",
 &messageProvider);
 ```

@@ -1,6 +1,6 @@
 ---
 title: Camera
-description: How to stream Camera on the MConn 
+description: How to stream Camera on the MConn
 sidebar:
   order: 5
 ---
@@ -19,8 +19,8 @@ Both of these classes are meant to be use from QML side.
 MConn supports up to four analog cameras simultaneously. The signals from these cameras are routed through an internal ADC (Analog-to-Digital Converter). Each of these cameras is represented as a device file in the system, accessible at paths:
 ```text
 1. /dev/video0
-2. /dev/video1  
-3. /dev/video2   
+2. /dev/video1
+3. /dev/video2
 4. /dev/video3
 ```
 
@@ -30,7 +30,7 @@ The following table describes the pin configuration on the mating connector:
 ![Video Pins on AMPSEAL 776273-1 Mating Connector](../../../../assets/MConn_Connector_14.png)
 
 The following is the basic diagram for connecting analog camera to video1 (video0 in application).
-**[To Do] Add image here ** 
+**[To Do] Add image here **
 
 ### `Camera_C` (Camera in QML)
 For Analog we need to configure following `Camera` Q_PROPERTY in QML. To do so, follow the steps below:
@@ -72,7 +72,7 @@ Camera {
     }
 // Note: Do not create multiple instance of Camera with same analog camera device file.
 
-// Create instance of CameraPlayer that will render stream of camera, provide id of analog camera to its source field 
+// Create instance of CameraPlayer that will render stream of camera, provide id of analog camera to its source field
   CameraPlayer {
         id: camera1
         source: cameraList.analogCamSrc1
@@ -107,7 +107,7 @@ For Ethernet camera with RTSP protocol we need to configure following `Camera` Q
 Q_INVOKABLE void startStream();
 ```
 
-**CameraViewItem_C (CameraPlayer in QML)** 
+**CameraViewItem_C (CameraPlayer in QML)**
 
 For RTSP we need to configure the following CameraPlayer Q_PROPERTY in QML:
 
