@@ -18,7 +18,7 @@ The `VideoPlayer_C` module enables video playback functionality using Qt's `QMed
 - Dynamic creation and destruction of media player
 
 ### Initialization
-```
+```cpp
 VideoPlayer_C* m_videoPlayer = std::make_shared<AudioVideoPlayer_CPlayer_C>(this);
 m_engine->rootContext()->setContextProperty("VideoPlayer_Q", m_videoPlayer.get());
 ```
@@ -29,25 +29,25 @@ Internally, the constructor sets the media to a sample file like `/rw_data/sampl
 
 ##### `void play()`
 Starts or resumes video playback.
-```
+```cpp
 m_videoPlayer->play();
 ```
 
 ##### `void pause()`
 Pauses the video.
-```
+```cpp
 m_videoPlayer->pause();
 ```
 
 ##### `void stop()`
 Stops playback and resets internal state.
-```
+```cpp
 m_videoPlayer->stop();
 ```
 
 ##### `void setMediaPosition(int newPosition)`
 Seeks to a specified position in milliseconds.
-```
+```cpp
 m_videoPlayer->setMediaPosition(5000);  // 5 seconds
 ```
 
@@ -62,7 +62,7 @@ Sets the video format for the rendering surface. *(Currently not fully used in s
 
 ##### `void getMetaData()`
 Fetches and logs all available metadata from the media file.
-```
+```cpp
 m_videoPlayer->getMetaData();
 ```
 
@@ -91,7 +91,7 @@ Updates the player's internal state.
 
 ##### `void onNewVideoContentReceived(const QVideoFrame &frame)`
 Receives raw frames and pushes them to the video surface.
-```
+```cpp
 // Called when a new frame is received
 m_surface->present(frame);
 ```
@@ -120,34 +120,34 @@ Sets player state and emits stateChanged.
 ## Usage Example
 
 ### Basic Video Playback
-```
+```cpp
 m_videoPlayer->play();
 ```
 
 ### Pause / Stop
-```
+```cpp
 m_videoPlayer->pause();
 m_videoPlayer->stop();
 ```
 
 ### Seek to Position
-```
+```cpp
 m_videoPlayer->setMediaPosition(120000);  // Jump to 2 minutes
 ```
 
 ### Dynamic Initialization / Destruction
-```
+```cpp
 m_videoPlayer->destroyMediaPlayer();
 m_videoPlayer->initMediaPlayer();
 ```
 
 ### Metadata Logging
-```
+```cpp
 m_videoPlayer->getMetaData();  // Logs all metadata keys & values
 ```
 
 ### Connecting to Signals
-```
+```cpp
 QObject::connect(m_videoPlayer, &VideoPlayer_C::positionChanged, [](int pos){
     qDebug() << "Position: " << pos;
 });
@@ -155,18 +155,18 @@ QObject::connect(m_videoPlayer, &VideoPlayer_C::positionChanged, [](int pos){
 
 ### Default Video Path Resolution
 The constructor attempts to automatically resolve a path like:
-```
+```text
 /rw_data/sample_video.mp4
 ```
 or
-```
+```text
 $HOME/sample_video.mp4
 ```
 It uses `getcwd()` and conditional compilation with `OS_EMBEDDED` to resolve it appropriately.
 
 ### Usage of `VideoPlayer_Q` with `VideoOutput`
 In this code, you're using the `VideoOutput` element to display video content from a backend media player object named `VideoPlayer_Q`.
-```
+```cpp
 VideoOutput { id: videoOut source: VideoPlayer_Q anchors.fill: parent }
 ```
 

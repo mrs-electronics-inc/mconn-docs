@@ -12,14 +12,14 @@ The user application can be started manually.
 To start the user application manually follow the steps below:
 
 1. Transfer the your-app executable to the /opt/bin location on the Display, using the USB.
-```
+```shell
 $ mount -o remount,rw /
 $ cp /run/media/sda1/your-app /opt/bin
 $ sync
 $ mount -o remount,ro /
 ```
 2. Add the permission to execute the application with the following commands:
-```
+```shell
 $ cd /opt/bin
 $ chmod +x your-app
 $ ./your-app
@@ -37,17 +37,17 @@ In Normal Startup mode, the user application starts when most of the elements ar
 To start the application in the Normal Startup mode, follow the steps below:
 
 1. Transfer the your-app executable to the /opt/bin location on the Display, using the USB.
-```
+```shell
 $ mount -o remount,rw /
 $ cp /run/media/sda1/your-app /opt/bin
 ```
 2. Create a link file of the user application.
-```
+```shell
 $ cd /opt/bin
 $ ln -sf your-app normal.app.0
 ```
 3. Enable the systemd service.
-```
+```shell
 $ systemctl enable startup-app@0
 $ sync
 $ mount -o remount,ro /
@@ -65,12 +65,12 @@ Ensure that your application does not use ```shutdown``` or ```reboot``` command
 To enable the Early Startup mode, follow the steps below:
 
 1. Transfer the your-app executable to the /opt/bin location on the Display, using the USB.
-```
+```shell
 $ mount -o remount,rw /
 $ cp /run/media/sda1/your-app /opt/bin
 ```
 2. Create a link file for the user application.
-```
+```shell
 $ cd /opt/bin
 $ ln -sf your-app early.app.0
 $ sync

@@ -13,48 +13,48 @@ This module is ideal for applications that need media playback integration and w
 ### Primary Functions of `AudioPlayer_C`
 
 **initMediaPlayer** (public function) Initializes the QMediaPlayer object, connects its internal signals to update playback status, and sets initial volume.
-```
+```cpp
 void AudioPlayer_C::initMediaPlayer();
 ```
 
 **destroyMediaPlayer** (public function) Destroys the QMediaPlayer object to release the audio hardware (used especially when switching control to other modules like a radio player).
-```
+```cpp
 void AudioPlayer_C::destroyMediaPlayer();
 ```
 
 **play** (public function) Plays a local audio file. Default path is /rw_data/test.wav.
-```
+```cpp
 void AudioPlayer_C::play(QString path = "/rw_data/test.wav");
 ```
 
 **pause** (public function) Pauses playback.
-```
+```cpp
 void AudioPlayer_C::pause();
 ```
 
 **stop** (public function) Stops playback and resets internal state.
-```
+```cpp
 void AudioPlayer_C::stop();
 ```
 
 **repeat** (public function) Enables or disables repeat mode. Internally, a timer checks for end of playback to restart the track.
-```
+```cpp
 void AudioPlayer_C::repeat(bool repeat);
 ```
 
 **setVolume / getVolume** (public function) Sets or gets the volume. Volume value is expected as a percentage (0–100), internally scaled to ALSA's 0.0–1.0 range.
-```
+```cpp
 void AudioPlayer_C::setVolume(double volume);
 double AudioPlayer_C::getVolume();
 ```
 
 **formatMillisec** (public function) Converts milliseconds into a formatted time string hh:mm:ss.
-```
+```cpp
 QString AudioPlayer_C::formatMillisec(int milliseconds);
 ```
 
 **prepareHardware / resetHardware** (public function) Controls GPIO pin 149 to switch audio routing hardware for playback.
-```
+```cpp
 void AudioPlayer_C::prepareHardware(bool rds_out = false);
 void AudioPlayer_C::resetHardware();
 ```
@@ -72,12 +72,12 @@ These properties are exposed via `Q_PROPERTY` and are directly bindable in QML:
 ## Usage
 
 ### Initialize and Expose to QML
-```
+```cpp
 m_audioPlayer = std::make_shared<AudioPlayer_C>(this);
 m_engine->rootContext()->setContextProperty("AudioPlayer_Q", m_audioPlayer.get());
 ```
-### Playback from QML3
-```
+### Playback from QML
+```qml
 Button {
     text: AudioPlayer_Q.isPlaying ? "Pause" : "Play"
     onClicked: {
@@ -88,7 +88,7 @@ Button {
     }
 }
 ```
-```
+```qml
 Button {
     text: "Stop"
     onClicked: AudioPlayer_Q.stop()
@@ -96,7 +96,7 @@ Button {
 ```
 
 ### Volume Control in QML
-```
+```qml
 Slider {
     from: 0
     to: 100
@@ -105,7 +105,7 @@ Slider {
 }
 ```
 ### Seek Functionality in QML
-```
+```qml
 Slider {
     from: 0
     to: AudioPlayer_Q.duration
@@ -114,7 +114,7 @@ Slider {
 }
 ```
 ### Enable Repeat Playback
-```
+```qml
 CheckBox {
     text: "Repeat"
     onCheckedChanged: AudioPlayer_Q.repeat(checked)

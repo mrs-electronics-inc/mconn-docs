@@ -22,7 +22,7 @@ It uses the **I2C-1** serial bus interface to communicate with the Display proce
 The library contains a calibration document with calibration values, which can be used to remove IMU soft and hard iron disturbances.
 
 The C++ implementation of **RTIMULib** in the **Reference App** is as follows:
-```
+```cpp
 RTIMUSettings *settings = new RTIMUSettings("RTIMULib");
 RTIMU *imu = RTIMU::createIMU(settings);
 imu->IMUInit();
@@ -43,7 +43,7 @@ To find the output of the IMU Sensor in the **Reference App**, navigate to the *
 The Display has an integrated hardware RTC. The RTC keeps track of the current time when the display is not powered on and re-syncs with the Linux OS when the Display is powered on.
 
 To set up the RTC, enter the following commands in the terminal:
-```
+```shell
 $ date -s "2021-07-22 17:00:00"
 $ hwclock -w 
 ```

@@ -23,13 +23,13 @@ The display has twelve **0-12V** digital inputs. The table below shows the Gener
 | **12**    | 144      | **35**      | 136      |
 
 The state of the digital inputs can be read through C++ code or terminal commands. To read the state of digital inputs from the terminal, enter the following commands:
-```
+```shell
 $ echo 91 > /sys/class/gpio/export
 $ echo in > /sys/class/gpio/gpio91/direction
 $ cat /sys/class/gpio/gpio91/value // Read the value of the input
 ```
 To read the state of digital inputs in the **Reference App** via C++, use the following code:
-```
+```cpp
 // Reference App I/O Module
 int input = io->get_channel_value("INPUT1"); // Read Digital Input
 ```
@@ -37,7 +37,7 @@ int input = io->get_channel_value("INPUT1"); // Read Digital Input
 The display has six **0-12V** analog inputs. The built-in co-processor reads the analog inputs (Read more about it in the [Coprocessor section](../embedded-devices#coprocessor)) and then passes to the main processor via UART or CAN. The assigned pins for analog inputs on AMPSEAL connector are 9,10, 17, 19, 20, and 22.
 
 The state of the analog input can only be read through C++ code in the **Reference App** by reading and parsing the data from UART. Use the code below to read analog inputs via C++:
-```
+```cpp
 analog_input = new adc("/dev/ttymxc4");
 connect(analog_input, SIGNAL(adc_ready(int, int)), this, SLOT(adc_ready(int, int)));
 void demoApp::adc_ready(int channel, int value)
@@ -57,15 +57,15 @@ The display has four digital high-side drivers capable of sourcing up to 2A each
 | **4**      | 163      | **7**       | 200      |
 
 The digital outputs can be controlled through C++ code or terminal commands. To control it from the terminal, enter the following commands:
-```
+```shell
 $ echo 198 > /sys/class/gpio/export
 $ echo out > /sys/class/gpio/gpio162/direction
-$ echo 1 > /sys/class/gpio/gpio162/value	// Turn output on
-$ echo 0 > /sys/class/gpio/gpio162/value	// Turn output off
+$ echo 1 > /sys/class/gpio/gpio162/value	# Turn output on
+$ echo 0 > /sys/class/gpio/gpio162/value	# Turn output off
 ```
 
 Use the code below to control the digital outputs in the **Reference App** via C++:
-```
+```cpp
 analog_input = new adc("/dev/ttymxc4");
 io->set_channel_value("OUTPUT3", true);	// Turn output on
 io->set_channel_value("OUTPUT3", false);	// Turn output off

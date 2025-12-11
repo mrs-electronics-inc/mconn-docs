@@ -44,7 +44,7 @@ The display can be accessed through ssh from multiple interfaces. The available 
 ### In built Ethernet Connection
 To connect via Ethernet, simply plug the RJ45 Ethernet plug at the back of the device. By default, the display ethernet interface is configured as a DHCP server, so it will automatically assign the IP address to the connected device. You can now access the device through SSH as follows:
 
-```
+```shell
 ssh root@192.168.57.1   
 ```
 
@@ -65,14 +65,14 @@ To connect via USB to Ethernet, you need a **RJ45 to USB-A adapter**. Plug the U
 By Default, the root file system is in read-only mode as it is safer and faster. However, for actions like copying the user application or enabling a ```systemd``` service, the read/write mode is required. To switch to that mode, follow these steps:
 
 1. Type the following terminal command:
-```
+```shell
 $ mount -o remount,rw /  
 ```
 :::tip
 ```!1``` is shortcut for remounting the root file system in read/write mode
 :::
 2. After writing, issue the sync command to complete the process of writing to the main file and switch back to the read-only mode.
-```
+```shell
 $ sync
 $ mount -o remount,ro /
 ```
@@ -84,7 +84,7 @@ $ mount -o remount,ro /
 The root file system operates in read-only mode. However, there is a dedicated partition for user data and operates in read/write mode. This partition also contains some important configuration files that you can change and is 1.2GB in size.
 
 To navigate to this location, enter the following commands:
-```
+```shell
 $ cd /rw_data
 ```
 :::note
@@ -96,7 +96,7 @@ This section covers the steps of finding the current version of the Display’s 
 
 ### Current Version
 Enter the following commands in the terminal to find the current version of the OS:
-```
+```shell
 $ get-os-version
 $ System version:  2.6.1	
 ```
@@ -109,7 +109,7 @@ This section covers the details of setting up your screen such as touch screen c
 
 ### Touch Screen Calibration (if required, By default already calibrated at factory)
 To calibrate the touch screen, run the ```ts_calibrate``` utility from the terminal as shown below:
-```
+```shell
 $ mount -o remount,rw /
 $ ts_calibrate
 $ mount -o remount,ro /
@@ -119,11 +119,11 @@ Once done, the calibration utility shows on the display and prompts you to touch
 ### Backlight Control
 The brightness of the backlight can be controlled programmatically or from the terminal. The backlight has 100 steps of brightness (0-100), with 0 being the lowest and 100 being the highest.
 To control the backlight from the terminal, use the following command:
-```
+```shell
 $ echo 100 > /sys/class/backlight/backlight/brightness
 ```
 To control the backlight in the **Reference App** via C++, add the following to the code:
-```
+```cpp
 io->set_backlight(100);	// Set backlight to 100%
 io->set_backlight(50);	// Set backlight to 50%
 ```
