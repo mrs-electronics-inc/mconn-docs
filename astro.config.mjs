@@ -47,12 +47,8 @@ export default defineConfig({
 					autogenerate: { directory: "starting-user-application" },
 				},
 				{
-					label: "Technical Support",
-					autogenerate: { directory: "technical-support" },
-				},
-				{
-					label: "Downloads",
-					autogenerate: { directory: "downloads" },
+					label: "Other",
+					autogenerate: { directory: "other" },
 				},
 			],
 		}),
