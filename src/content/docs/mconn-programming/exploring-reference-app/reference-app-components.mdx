@@ -28,6 +28,7 @@ The display is equipped with a programmable buzzer, accessible through the I/O p
 ![Buzzer Control](../../../../assets/Reference_App_IO_Buzzer.png)
 
 The following function controls the buzzer and is accessible from C++ and QML:
+
 ```cpp
 Q_INVOKABLE void setBuzzer(bool status, uint frequency = 1000);
 ```
@@ -43,6 +44,7 @@ Users can set a value between **0** and **100**.
 ![Brightness Control](../../../../assets/Reference_App_IO_Brightness.png)
 
 The brightness can also be controlled programmatically using the following function from C++ and QML:
+
 ```cpp
 Q_INVOKABLE void setBacklight(uint percent);
 ```
@@ -60,6 +62,7 @@ In the UI, these analog inputs are represented by the components **AL1** to **AL
 ![Analog Inputs](../../../../assets/Reference_App_IO_AnalogInput.png)
 
 In QML, the values of these analog inputs can be accessed through the following `Q_PROPERTY` declarations:
+
 ```cpp
 Q_PROPERTY(double adc1V READ adc1V NOTIFY adc1VChanged)
 Q_PROPERTY(double adc2V READ adc2V NOTIFY adc2VChanged)
@@ -101,6 +104,7 @@ The table below shows the GPIO numbers assigned to these digital outputs on the 
 ![Digital Outputs](../../../../assets/Reference_App_IO_DigitalOut.png)
 
 The digital outputs can be controlled using the following function, accessible from QML/C++:
+
 ```cpp
 Q_INVOKABLE void setDigitalOutput(uint pin, bool value);
 ```
@@ -134,6 +138,7 @@ Refer to the [MConn Programming](../../qt-qml) guide for more details.
 :::
 
 Example usage:
+
 ```qml
 // Important: You need to import registered types here. In case of Reference app it will be:
 import MRSComponents 1.0
@@ -223,6 +228,7 @@ The MConn comes with a video player. The **Reference App** video player holds pl
 - 3gp
 
 Following are the commands to use the video player in QML:
+
 ```qml
   Video {
         id: video

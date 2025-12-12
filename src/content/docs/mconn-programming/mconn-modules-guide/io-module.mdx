@@ -6,6 +6,7 @@ sidebar:
 ---
 
 ## Introduction
+
 The IO module comprehensively supports digital and analog inputs and outputs, including LCD brightness control and buzzer management. The MConn incorporates 12 digital inputs, four digital outputs, and six analog inputs, all operating within the 0 to 12V range. Analog inputs are processed by a co-processor and transmitted to the main processor through UART. The C++ IO module consists of three primary classes:
 
 1. **adc Class (not intended for direct use)**: This class reads analog input pins through UART, which receive data from co-processors.
@@ -17,7 +18,9 @@ No additional modules (and their includes) are needed since this is part of the 
 :::
 
 ### Reading Analog pin value
+
 This class offers a set of read-only `Q_PROPERTY` designed for accessing and binding analog pin values to the front end. The properties ending with "V" represent the pin values converted to volts, while those without "V" are in millivolts.
+
 ```cpp
 Q_PROPERTY(int adc1 READ adc1 WRITE setAdc1 NOTIFY adc1Changed)
 Q_PROPERTY(int adc2 READ adc2 WRITE setAdc2 NOTIFY adc2Changed)
@@ -34,6 +37,7 @@ Q_PROPERTY(double adc6V READ adc6V NOTIFY adc6VChanged)
 ```
 
 In addition, public getter functions are available for accessing the values of analog pins on the C++ side:
+
 ```cpp
 // ADC Getters
 int adc1() const;
@@ -49,10 +53,13 @@ double adc4V() const;
 double adc5V() const;
 double adc6V() const;
 ```
+
 ### Reading digital pin value
+
 To read digital pin values, two primary approaches are available:
 
 1. Using Separate `Q_PROPERTY` (QML) and C++ Getters: This method involves predefined `Q_PROPERTY` for QML side, and corresponding C++ getter functions for backend, that receive updates every 500 milliseconds.
+
 ```cpp
 Q_PROPERTY(bool digitalInput1Status READ getDigitalInput1Status WRITE setDigitalInput1Status NOTIFY digitalInput1StatusChanged)
 Q_PROPERTY(bool digitalInput2Status READ getDigitalInput2Status WRITE setDigitalInput2Status NOTIFY digitalInput2StatusChanged)
@@ -67,6 +74,7 @@ Q_PROPERTY(bool digitalInput10Status READ getDigitalInput10Status WRITE setDigit
 Q_PROPERTY(bool digitalInput11Status READ getDigitalInput11Status WRITE setDigitalInput11Status NOTIFY digitalInput11StatusChanged)
 Q_PROPERTY(bool digitalInput12Status READ getDigitalInput12Status WRITE setDigitalInput12Status NOTIFY digitalInput12StatusChanged)
 ```
+
 ```cpp
 // Digital IO Getters
 bool getDigitalInput1Status() const;
@@ -84,11 +92,13 @@ bool getDigitalInput12Status() const;
 ```
 
 2. Direct Value Retrieval via `Q_INVOKABLE` Function: Alternatively, developer can directly obtain the exact value of any pin at any given time through a `Q_INVOKABLE` function.
+
 ```cpp
 Q_INVOKABLE bool getValueDigitalIO(uint pin);
 ```
 
 Developers can pass specific Q_Properties as arguments that provide hardware pin number, such as:
+
 ```cpp
 Q_PROPERTY(int digitalInput1 READ pinNumDigitalInput1 CONSTANT)
 Q_PROPERTY(int digitalInput2 READ pinNumDigitalInput2 CONSTANT)
@@ -108,12 +118,15 @@ Numbering of pins is same as that of hardware:
 ![Input Digital Pins on AMPSEAL 776164-1 Mating Connector](../../../../assets/MConn-Connector-35.png)
 
 ### Set digital pin value
+
 The module provides four pins with the direction set as output. Developers can easily configure these pins using a straightforward `Q_INVOKABLE` function, accessible from both QML and C++:
+
 ```cpp
 Q_INVOKABLE void setDigitalOutput(uint pin, bool value);
 ```
 
 To utilize this function, developer must specify the pin number by choosing from the following `Q_PROPERTY`:
+
 ```cpp
 Q_PROPERTY(int digitalOutput3 READ pinNumDigitalOutput3 CONSTANT)
 Q_PROPERTY(int digitalOutput4 READ pinNumDigitalOutput4 CONSTANT)
@@ -125,25 +138,32 @@ Numbering of pins is same as that of hardware:
 ![Input Digital Pins on AMPSEAL 776164-1 Mating Connector](../../../../assets/MConn-Connector-35.png)
 
 ### Set screen brightness
+
 This class provides a simple `Q_INVOKABLE` function to set screen brightness. It can be called from qml and C++ and takes a value from 0 to 100.
+
 ```cpp
 Q_INVOKABLE void setBacklight(uint percent);
 ```
 
 ### Set buzzer
+
 This class provides a simple `Q_INVOKABLE` function to control a buzzer. The user needs to provide the buzzer's state to turn it on and off, along with its frequency.
+
 ```cpp
 Q_INVOKABLE void setBuzzer(bool status, uint frequency = 1000);
 ```
 
 ## Usage
+
 1. Create instance of Io_C class and expose it to frontend:
+
 ```cpp
 m_io = std::make_shared<Io_C>(this);
 m_engine->rootContext()->setContextProperty("Io_Q", m_io.get());
 ```
 
 2. Read/bind analog pin value on frontend qml that is sync with backend and update in real time:
+
 ```qml
 Text {
     id: analogPin1Value
@@ -155,6 +175,7 @@ Text {
 ```
 
 3. Read/bind digital pin value:
+
 ```qml
 Text {
     id: value2
@@ -166,6 +187,7 @@ Text {
 ```
 
 4. Set Digital output pin value using switch.
+
 ```qml
 Switch{
         anchors.centerIn: parent
@@ -176,6 +198,7 @@ Switch{
 ```
 
 5. Set screen brightness.
+
 ```qml
 Slider{
         id: screenBrightnessSlider
@@ -193,8 +216,9 @@ Slider{
 ```
 
 6. Set buzzer frequency and turn buzzer on and off.
+
 ```qml
-// Global properties place at root of qml file 
+// Global properties place at root of qml file
 property bool buzzerOn: false
 property int buzzerFrequencyMax: 15000
 property int buzzerFrequency: 0.2 * buzzerFrequencyMax

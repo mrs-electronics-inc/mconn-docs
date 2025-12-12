@@ -6,6 +6,7 @@ sidebar:
 ---
 
 ## Introduction
+
 The Camera module within the Reference app offers features to showcase real-time streaming from RTSP, UDP, and analog cameras. Additionally, it facilitates the recording of streaming content. This functionality is implemented through the utilization of two classes.
 
 - `Camera_C`: This class generates a `GStreamer` pipeline to capture streams from the specified camera, whether it be an RTSP, analog, or UDP camera. It also extracts video frames from the stream. `Camera_C` is exposed to the front end as qmlRegisterType by the name Camera.
@@ -16,7 +17,9 @@ Both of these classes are meant to be use from QML side.
 :::
 
 ## Analog Camera
+
 MConn supports up to four analog cameras simultaneously. The signals from these cameras are routed through an internal ADC (Analog-to-Digital Converter). Each of these cameras is represented as a device file in the system, accessible at paths:
+
 ```text
 1. /dev/video0
 2. /dev/video1
@@ -33,11 +36,13 @@ The following is the basic diagram for connecting analog camera to video1 (video
 **[To Do] Add image here **
 
 ### `Camera_C` (Camera in QML)
+
 For Analog we need to configure following `Camera` Q_PROPERTY in QML. To do so, follow the steps below:
 
 1. `type` **[Q_PROPERTY] (Required)**: For the analog camera `type` property, must be set to string `analog`.
 2. `captureDevice` **[Q_PROPERTY] (Required)**: For analog cameras, the developer needs to specify the capture device from `/dev/video0`, `/dev/video1`, `/dev/video2`, or `/dev/video3`.
 3. `startStream` **[Q_INVOKABLE function]**: This function starts the camera's stream.
+
 ```cpp
 Q_INVOKABLE void startStream();
 ```
@@ -47,6 +52,7 @@ For Analog cameras only one Camera in QML can be initiated per camera.
 :::
 
 ### `CameraViewItem_C` (CameraPlayer in QML)
+
 For Analog we need to configure the following `CameraPlayer` Q_PROPERTY in QML:
 
 1. `source` **[Q_PROPERTY] (Required)**: Specify the identifier assigned to the camera in QML. This is essential for the Camera Player to establish a connection and receive frames from the analog camera, rendering them accordingly.
@@ -54,14 +60,16 @@ For Analog we need to configure the following `CameraPlayer` Q_PROPERTY in QML:
 #### Usage
 
 1. Expose `Camera_C` and `CameraViewItem_C` to frontend as `qmlRegisterType`.
+
 ```cpp
 qmlRegisterType<CameraViewItem_C>("MRSComponents", 1, 0, "CameraPlayer");
 qmlRegisterType<Camera_C>("MRSComponents", 1, 0, "Camera");
 ```
 
 2. For analog camera, use the following code:
+
 ```qml
-// Create instance of camera set type to analog and in captureDevice specify analog camera device file, and upon component complete start stream 
+// Create instance of camera set type to analog and in captureDevice specify analog camera device file, and upon component complete start stream
 Camera {
         id: analogCamSrc2
         type: "analog"
@@ -85,6 +93,7 @@ Camera {
 ```
 
 ## Ethernet Camera
+
 Currently, MConn supports two protocols for Ethernet cameras: "RTSP" and "UDP".
 
 :::tip
@@ -94,6 +103,7 @@ To guarantee proper functionality, the developer must ensure that both MConn and
 The developer needs to specify the appropriate URL for these cameras, with further details provided in the following sections. For additional protocol support, developers can contact technical support at MRS Electronics for assistance.
 
 ### RTSP Protocol
+
 **Camera_C (Camera in QML)**
 
 For Ethernet camera with RTSP protocol we need to configure following `Camera` Q_PROPERTY in QML:
@@ -103,6 +113,7 @@ For Ethernet camera with RTSP protocol we need to configure following `Camera` Q
 3. `userID` **[Q_PROPERTY] (Required for rtsp camera)**: Developer need to specify username for the rtsp camera.
 4. `password` **[Q_PROPERTY] (Required for rtsp camera)**: Developer need to specify password for the rtsp camera.
 5. `startStream` **[Q_INVOKABLE function]**: This function is used to start the stream of camera.
+
 ```cpp
 Q_INVOKABLE void startStream();
 ```
@@ -113,9 +124,10 @@ For RTSP we need to configure the following CameraPlayer Q_PROPERTY in QML:
 
 1. `source` **[Q_PROPERTY] (Required)**: Specify the identifier assigned to the camera in QML. This is essential for the Camera Player to establish a connection and receive frames from the RTSP camera, rendering them accordingly.
 
-*Usage*:
+_Usage_:
+
 ```qml
-//Create instance of camera set type to rtsp and in captureDevice specify url for camera, and upon component complete start stream  
+//Create instance of camera set type to rtsp and in captureDevice specify url for camera, and upon component complete start stream
   Camera {
         id: rtspEthernetCamSrc
         type: "rtsp"
@@ -140,6 +152,7 @@ For RTSP we need to configure the following CameraPlayer Q_PROPERTY in QML:
 ```
 
 ### UDP Protocol
+
 **Camera_C (Camera in QML)**
 
 For Ethernet camera with UDP protocol we need to configure following Camera Q_PROPERTY in QML:
@@ -153,9 +166,10 @@ For UDP, the developer needs to configure the following `CameraPlayer` Q_PROPERT
 
 1. `source` **[Q_PROPERTY] (Required)**: Specify the identifier assigned to the camera in QML. This is essential for the Camera Player to establish a connection and receive frames from the UDP camera, rendering them accordingly.
 
-*Usage*:
+_Usage_:
+
 ```qml
-//Create instance of camera set type to udp and in captureDevice specify port for camera, and upon component complete start stream  
+//Create instance of camera set type to udp and in captureDevice specify port for camera, and upon component complete start stream
   Camera {
         id: udpEthernetCamSrc
         type: "udp"

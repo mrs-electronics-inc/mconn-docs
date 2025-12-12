@@ -8,25 +8,30 @@ sidebar:
 The Display is equipped with several embedded devices, which add multiple functionalities. This section describes each of those embedded devices.
 
 ## Buzzer
+
 The Display comes with a programmable buzzer. It is typically used to sound-notify the user of any system fault or warning. The buzzer can be configured via C++ code or from the terminal.
 
 Enter the following commands to configure the buzzer from the terminal:
+
 ```shell
 $ echo 0 > /sys/class/pwm/pwmchip1/export
 $ echo 1000000 > /sys/class/pwm/pwmchip1/pwm0/period
-$ echo 500000 > /sys/class/pwm/pwmchip1/pwm0/duty_cycle 
+$ echo 500000 > /sys/class/pwm/pwmchip1/pwm0/duty_cycle
 $ echo 1 > /sys/class/pwm/pwmchip1/pwm0/enable # Turn buzzer on
 $ echo 0 > /sys/class/pwm/pwmchip1/pwm0/enable # Turn buzzer off
 ```
+
 The values are in nano seconds, So 1000000=1msec ==> 1KHz.
 
 Use the following code to configure the buzzer in the **Reference App** via C++:
+
 ```cpp
 io = new digital_io();
 io->set_buzzer_freq(frequency)
 io->set_buzzer(true);	// Turn buzzer on
 io->set_buzzer(false);	// Turn buzzer off
 ```
+
 To control the volume of the buzzer from the **Reference App**, use the slide bar on the right side:
 
 ![Buzzer Volume Control in the Reference App](../../../assets/Reference_App_IO_Buzzer.png)
@@ -34,6 +39,7 @@ To control the volume of the buzzer from the **Reference App**, use the slide ba
 If a further frequency and notification sound are required, use the device's audio output, which can play any MP3 or WAV file.
 
 ## Coprocessor
+
 The MConn Display has a coprocessor that performs multiple functions, including the following:
 
 1. Reads analog inputs.
