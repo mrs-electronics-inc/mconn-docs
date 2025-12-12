@@ -13,5 +13,5 @@ repos:
         name: Prettier
         entry: npx prettier --write --ignore-unknown
         language: system
-        files: \.(md|mdoc|markdoc)$
+        files: \.(md|mdx|mdoc|markdoc)$
         types_or: [markdown, text]
