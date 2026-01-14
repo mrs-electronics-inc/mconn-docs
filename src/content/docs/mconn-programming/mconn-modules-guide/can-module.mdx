@@ -1,0 +1,170 @@
+---
+title: CAN Module
+description: How to work CAN on MConn
+sidebar:
+  order: 6
+---
+
+## Introduction
+
+The module is built upon the foundational principles of Linux Socket CAN, offering a simplified interface through functions and signals to streamline day-to-day tasks. At its core, the module employs socket programming to transmit and receive CAN messages. Presently, the module supports concurrent operations on two CAN buses, namely `can0` (On hardware **can1**) and `can1`(On hardware **can2**).
+
+Additionally, it extends its functionality to support virtual CAN interfaces, vcan0 and vcan1, catering to desktop environment testing requirements.
+
+![CAN Pins on AMPSEAL 776164-1 Connector](../../../../assets/MConn-Connector-35.png)
+
+Here is a concise overview of the primary functions within the Can_C class:
+
+### `startReceiving` (public function)
+
+Specifying the CAN ID is necessary to receive any message. This allows the CAN module to selectively filter messages and prevent unnecessary bus load. The `startReceiving` function must specify the CAN ID along with the `onlyChanged` flag. When set to false, the function will capture all messages on the specified CAN ID.
+
+Conversely, when set to true, the function will exclusively receive messages on the specified CAN ID only if the data within the message frame changes.
+
+```cpp
+void Can_C::startReceiving(canid_t id, bool onlyChanged);
+```
+
+### `stopReceiving` (public function)
+
+At any given point in time, the `stopReceiving` function can be used to cease the reception of a specific message that was previously received. This function effectively blocks the specified message on the CAN ID.
+
+```cpp
+bool stopReceiving(canid_t id) override;
+```
+
+### `canFrameReceived` (Signal)
+
+This signal is emitted whenever a message is received on the bus. Internally, a non-publicly accessible thread constantly checks for message availability. This signal is emitted upon reception, carrying the CAN frame as an argument. The basic structure of a CAN frame includes the data length (DLC), CAN ID, and data in the form of an array. This representation aligns with the Linux SocketCAN standard.
+
+### `frameReceived` (Signal)
+
+Alternatively, this signal emits a fragmented CAN message, providing an alternative mechanism for handling received CAN data.
+
+```cpp
+void canFrameReceived(const can_frame &canframe);    // recommended
+void frameReceived(int canID, int dlc, int lowerBytes, int upperBytes);
+
+// Structue of can_frame from can.h part of linux SocketCAN
+
+struct can_frame {
+ canid_t can_id;  /* 32 bit CAN_ID + EFF/RTR/ERR flags */
+ __u8    can_dlc; /* frame payload length in byte (0 .. CAN_MAX_DLEN) */
+ __u8    __pad;   /* padding */
+ __u8    __res0;  /* reserved / padding */
+ __u8    __res1;  /* reserved / padding */
+ __u8    data[CAN_MAX_DLEN] __attribute__((aligned(8)));
+};
+```
+
+### `sendOnce` (public function)
+
+The `sendOnce` function facilitates the transmission of a CAN message on the bus, and it comes in two overloaded forms. The first variant accepts the components of the CAN frame structure from SocketCAN as arguments, including the CAN `id`, `dlc`, and `data`. The second variant takes the message in fragmented form, incorporating the `id`, `dlc`, upper four bytes, and lower four bytes.
+
+```cpp
+bool sendOnce(canid_t id, uint8_t dlc, uint64_t data) override;
+bool sendOnce(const can_frame &frame) override;
+```
+
+### `sendCyclical` (public function)
+
+The `sendCyclical` function cyclically sends CAN messages on the bus. It requires the specification of a can_frame along with a cyclical interval, ensuring the message is transmitted at the defined intervals. An overloaded version of this function is also available, allowing developers to provide the can `id`, `dlc`, `data` **_(uint64_t)_**, and interval parameters in a fragmented form.
+
+```cpp
+bool sendCyclical(canid_t id, uint8_t dlc, uint64_t data, uint32_t interval) override;
+bool sendCyclical(const can_frame &frame, uint32_t interval) override;
+```
+
+### `updateCyclical` (public function)
+
+The `updateCyclical` function allows for the modification of a cyclically broadcasted message at any given point in time. In one form, it requires the specification of a can_frame. An overloaded version of this function is also available, enabling developers to update the CAN `id`, `dlc`, and `data` **_(uint64_t)_** parameters in fragmented form.
+
+```cpp
+bool updateCyclical(canid_t id, uint8_t dlc, uint64_t data) override;
+bool updateCyclical(const can_frame &frame) override;
+```
+
+### `stopCyclical` (public function)
+
+The `stopCyclical` function is utilized to halt any ongoing cyclical CAN message. This function requires the specification of the CAN `id`, and the corresponding message will be promptly stopped.
+
+```cpp
+bool stopCyclical(canid_t id) override;
+```
+
+## Usage
+
+1. Initiating required classes and get instance of `Can_C`:
+
+```cpp
+// Initiate CAN instance
+     m_can0 = std::make_shared<Can_C>(this,"can0",500000);
+     m_engine->rootContext()->setContextProperty("can0", m_can0.get());
+```
+
+2. Receive CAN message:
+
+```cpp
+// Start receiving message on perticular can id
+m_can0->startReceiving(0x200,false);
+m_can0->startReceiving(0x300,false);
+
+// connect slot with canFrameReceived signal
+QObject::connect(m_can0.get(),&Can_C::canFrameReceived,this,&Receiver_C::onCanFrameReceived);
+
+// Inside Slot place check on can id and decode data.
+void Receiver_C::onCanFrameReceived(const can_frame &canframe)
+{
+    // decoding first byte
+    DecodeInfo decodingArguments;
+    decodingArguments.frame = reinterpret_cast<const uint8_t *>(canframe.data);
+    decodingArguments.startbit = 0;
+    decodingArguments.length = 8;
+    decodingArguments.is_signed = false;
+    decodingArguments.is_big_endian = false;
+    decodingArguments.factor = 1;
+    decodingArguments.offset = 0;
+    float data = decode(decodingArguments);
+}
+
+Note: All message being receive by application will be receive in this slot, therefore its on developer to place a check on can_frame.can_id
+```
+
+3. Send CAN message once:
+
+```cpp
+//Create instance of can_frame
+can_frame canSingleMessgFrame;
+
+// set dlc and can id
+canSingleMessgFrame.can_dlc = 1;
+canSingleMessgFrame.can_id = 0x200;
+
+// set data
+uint64_t data = 1; // data to send
+memcpy(canSingleMessgFrame.data, &data, sizeof(data));
+
+// call send once
+m_can0->sendOnce(canSingleMessgFrame);
+```
+
+4. Send cyclical CAN message:
+
+```cpp
+// Create initial can_frame
+can_frame canCyclicalMessgFrame;
+
+// set dlc, can id and data
+canCyclicalMessgFrame.can_dlc = 1;
+canCyclicalMessgFrame.can_id = 0x300;
+uint64_t dataCyclical = 1; // data to send
+memcpy(canCyclicalMessgFrame.data, &dataCyclical, sizeof(dataCyclical));
+
+// Start cyclical message with specific interval
+m_can0->sendCyclical(canCyclicalMessgFrame,1000000); // every 10 second
+
+// Updating can cyclical message
+dataCyclical = 10;
+memcpy(canCyclicalMessgFrame.data, &dataCyclical, sizeof(dataCyclical));
+m_can0->updateCyclical(canCyclicalMessgFrame);
+```

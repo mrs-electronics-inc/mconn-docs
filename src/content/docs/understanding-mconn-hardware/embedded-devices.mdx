@@ -1,0 +1,60 @@
+---
+title: Embedded Devices
+description: Overview of buzzer and coprocessor
+sidebar:
+  order: 3
+---
+
+The Display is equipped with several embedded devices, which add multiple functionalities. This section describes each of those embedded devices.
+
+## Buzzer
+
+The Display comes with a programmable buzzer. It is typically used to sound-notify the user of any system fault or warning. The buzzer can be configured via C++ code or from the terminal.
+
+Enter the following commands to configure the buzzer from the terminal:
+
+```shell
+$ echo 0 > /sys/class/pwm/pwmchip1/export
+$ echo 1000000 > /sys/class/pwm/pwmchip1/pwm0/period
+$ echo 500000 > /sys/class/pwm/pwmchip1/pwm0/duty_cycle
+$ echo 1 > /sys/class/pwm/pwmchip1/pwm0/enable # Turn buzzer on
+$ echo 0 > /sys/class/pwm/pwmchip1/pwm0/enable # Turn buzzer off
+```
+
+The values are in nano seconds, So 1000000=1msec ==> 1KHz.
+
+Use the following code to configure the buzzer in the **Reference App** via C++:
+
+```cpp
+io = new digital_io();
+io->set_buzzer_freq(frequency)
+io->set_buzzer(true);	// Turn buzzer on
+io->set_buzzer(false);	// Turn buzzer off
+```
+
+To control the volume of the buzzer from the **Reference App**, use the slide bar on the right side:
+
+![Buzzer Volume Control in the Reference App](../../../assets/Reference_App_IO_Buzzer.png)
+
+If a further frequency and notification sound are required, use the device's audio output, which can play any MP3 or WAV file.
+
+## Coprocessor
+
+The MConn Display has a coprocessor that performs multiple functions, including the following:
+
+1. Reads analog inputs.
+2. Serves as a watchdog to ensure that the main processor does not lock up.
+3. Keeps the main processor alive when the ignition signal goes low, and it can be done by turning on KEEP_ALIVE output on coprocessor. It allows shutting down of the main processor in a delayed and controlled manner.
+4. Sends/Receives messages on the CAN bus.
+5. Asserts specific commands/data on CAN bus immediately at power on. The main display can take at least 5 seconds to boot. Whereas the coprocessor is instant-on and can perform CAN functions at startup if necessary. Contact MRS Electronic for more details.
+6. Holds a CAN bootloader and can be reprogrammed through the CAN bus.
+
+:::note
+You can update the software on the coprocessor using **MRS Developers Studio**, which allows you to write the software in C or Graphical Programming. For the source code of the application that currently resides on the Display, contact MRS Electronic.
+:::
+
+:::tip
+The CANBUS **can0** is shared with coprocessor and main processor. Therefore, please ensure that both processors have the same CANBUS baudrate otherwise it will create a CANBUS error.
+
+It is important to first update the coprocessor baudrate and then update the main processor baudrate.
+:::
