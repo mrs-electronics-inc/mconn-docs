@@ -46,27 +46,37 @@ The display can be accessed through ssh from multiple interfaces. The available 
 
 ### In built Ethernet Connection
 
-To connect via Ethernet, simply plug the RJ45 Ethernet plug at the back of the device. By default, the display ethernet interface is configured as a DHCP server, so it will automatically assign the IP address to the connected device. You can now access the device through SSH as follows:
+To connect via Ethernet, simply plug the **RJ45 Ethernet cable** into the port at the back of the device. By default, the display Ethernet interface is configured as a **DHCP client**, meaning it will automatically obtain an IP address from your network's DHCP server (typically your router or network switch).
 
+Since the IP address is dynamically assigned, you will need to find it before connecting. The easiest ways to do this are:
+
+- Use a Network Analyzer app (e.g. Fing, Advanced IP Scanner, or similar) to scan your network. Look for a device with the hostname prefix `imx6qmrsdisp`.
+- Alternatively, scan the available IPs on your network and look for the device by its MAC address or hostname.
+- Check your router's **DHCP lease table** for the assigned IP.
+
+Once you have the IP address, you can connect via SSH:
 ```shell
-ssh root@192.168.57.1
+ssh root@<assigned-ip>
+```
+For example:
+```shell
+ssh root@10.20.10.38
 ```
 
 ### SSH/SFTP Connection
 
-The connection to Display via **SSH/SFTP** is required to access the terminal or perform actions like sharing files. The details of that are shown in the table below:
+The connection to Display via **SSH/SFTP** is required to access the terminal or perform actions like sharing files. The connection details are as follows:
 
-| **Field**                            | Value        |
-| ------------------------------------ | ------------ |
-| **IP Address (Ethernet Connection)** | 192.168.57.1 |
-| **Port**                             | 22           |
-| **Username**                         | root         |
-| **Password**                         | mrsroot      |
+| **Field**                 | **Value**                                                                 |
+| ------------------------- | ------------------------------------------------------------------------- |
+| **IP Address (Ethernet)** | Dynamic — find using Network Analyzer (see above) <br/> Example: `192.168.1.38` |
+| **Port**                  | 22                                                                        |
+| **Username**              | root                                                                      |
+| **Password**              | mrsroot                                                                   |
 
 ### USB to Ethernet Connection
 
-To connect via USB to Ethernet, you need a **RJ45 to USB-A adapter**. Plug the USB-A end of the cable to one of the USB ports at the back of the device and the RJ45 end with RJ45 cable. The display in this configuration will be DHCP client, make sure you have DHCP server in your network and your network will be assigned to display. Find the IP address assigned to display from your network router and connect to that IP address via SSH.
-
+To connect via USB to Ethernet, you need an RJ45 to USB-A adapter. Plug the USB-A end into one of the USB ports at the back of the device and connect the RJ45 end via an Ethernet cable to your network. The display in this configuration also acts as a DHCP client — ensure you have a DHCP server in your network. Find the IP address assigned to the display using a Network Analyzer tool as described above or your router's DHCP lease table, then connect via SSH.
 ## File System
 
 By Default, the root file system is in read-only mode as it is safer and faster. However, for actions like copying the user application or enabling a `systemd` service, the read/write mode is required. To switch to that mode, follow these steps:
