@@ -46,7 +46,7 @@ The display can be accessed through ssh from multiple interfaces. The available 
 
 ### In built Ethernet Connection
 
-To connect via Ethernet, simply plug the RJ45 Ethernet plug at the back of the device. By default, the display ethernet interface is configured as a DHCP server, so it will automatically assign the IP address to the connected device. You can now access the device through SSH as follows:
+To connect via Ethernet, simply plug the RJ45 Ethernet plug at the back of the device. By default, the display ethernet interface is configured as a **DHCP Server**, so it will automatically assign the IP address to the connected device. You can now access the device through SSH as follows:
 
 ```shell
 ssh root@192.168.57.1
@@ -66,6 +66,29 @@ The connection to Display via **SSH/SFTP** is required to access the terminal or
 ### USB to Ethernet Connection
 
 To connect via USB to Ethernet, you need a **RJ45 to USB-A adapter**. Plug the USB-A end of the cable to one of the USB ports at the back of the device and the RJ45 end with RJ45 cable. The display in this configuration will be DHCP client, make sure you have DHCP server in your network and your network will be assigned to display. Find the IP address assigned to display from your network router and connect to that IP address via SSH.
+
+### Switching Ethernet Modes
+
+By default, the Ethernet interface is configured as a **DHCP Server**. You can switch between **DHCP Server** and **DHCP Client** modes using the `eth-conf.sh` utility.
+
+To configure `eth0` as a **DHCP Client** (to connect the display to an existing network):
+```shell
+eth-conf.sh -c
+```
+
+To configure `eth0` as a **DHCP Server** (default, for direct connection to the display):
+```shell
+eth-conf.sh -s
+```
+:::tip
+A reboot is required after switching modes for the changes to take effect:
+:::
+
+:::caution
+Switching modes will change the IP address of the display. If you are connected via SSH, your session will be dropped. 
+When in Server mode, connect directly to the display at `192.168.57.1`. 
+When in Client mode, find the assigned IP using a Network Analyzer app and look for the hostname prefix `imx6qmrsdisp`.
+:::
 
 ## File System
 
