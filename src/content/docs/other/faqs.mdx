@@ -9,6 +9,46 @@ sidebar:
 
 The Ethernet mode can be switched between DHCP Server and Client using the `eth-conf.sh` utility — for full details, see [Switching Ethernet Modes](/getting-started/setting-up-mconn#switching-ethernet-modes).
 
+### Why is the MConn Display's WiFi Hotspot not visible after switching to AP Mode?
+
+Check whether the wireless service started successfully:
+
+```bash
+systemctl status network-wireless.service
+systemctl status onebox-protocol@3.service
+```
+
+If `onebox-protocol@3.service` has failed, start it manually and then restart the wireless service:
+
+```bash
+/usr/sbin/onebox-protocol-start 3
+systemctl start network-wireless.service
+```
+
+### Why does the MConn Display not connect to network in Station (Client) Mode?
+
+Verify the SSID and password in `/etc/sta_settings.conf` are correct, then check the connection status:
+
+```bash
+wpa_cli -i wifi0 status
+```
+
+A `wpa_state=DISCONNECTED` or a handshake that never completes typically indicates an incorrect password or SSID.
+
+### Why does my connected device get no IP address in AP mode?
+
+Verify `systemd-networkd` is running and has configured `wifi1`:
+
+```bash
+systemctl status systemd-networkd
+```
+
+The log should include `wifi1: Configured`. If not, restart the service:
+
+```bash
+systemctl restart systemd-networkd
+```
+
 ### Other Questions
 
 If you have any additional questions about the MConn Display, please:
