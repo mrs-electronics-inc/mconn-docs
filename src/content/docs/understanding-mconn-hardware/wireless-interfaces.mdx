@@ -134,3 +134,188 @@ The `wpa_cli` output should show `wpa_state=COMPLETED` and `ifconfig` should sho
 | `wifi1`   | AP      | `192.168.87.1`       | Display acts as hotspot         |
 | `wifi0`   | Station | Assigned by router   | Display connects to a network   |
 | `eth0`    | Wired   | `192.168.57.1`       | Wired Ethernet                  |
+
+---
+
+## Bluetooth
+
+The MConn Display uses the **Redpine RS9113** wireless module for Bluetooth, which is the same module for WiFi. The RS9113 supports simultaneous WiFi and Bluetooth operation through its COEX (coexistence) mode. The Bluetooth stack on the display runs **BlueZ 5.50**, the standard Linux Bluetooth protocol stack, exposed through the `hci0` interface over SDIO.
+
+The display supports both **Bluetooth Classic** and **Bluetooth Low Energy (BLE)**, and is managed via the standard `bluetoothctl` command-line tool.
+
+:::note
+The `bluetooth.service` is enabled and starts automatically at boot. However, the underlying `hci0` interface depends on the `onebox` driver stack being initialized first. If Bluetooth is not working after a reboot, follow the steps in the [Starting Bluetooth Manually](#starting-bluetooth-manually) section below.
+:::
+
+### Checking if Bluetooth is Running
+
+To check whether the Bluetooth service is active:
+
+```bash
+systemctl status bluetooth
+```
+
+To check whether the `hci0` interface is up:
+
+```bash
+hciconfig -a
+```
+
+The output should show `UP RUNNING` and the device's Bluetooth MAC address:
+
+```
+hci0:   Type: Primary  Bus: SDIO
+        BD Address: 88:DA:1A:B3:B4:AF
+        UP RUNNING
+        ...
+```
+
+### Starting Bluetooth Manually
+
+If `hciconfig -a` returns no output or the interface is `DOWN`, initialize the Bluetooth stack manually:
+
+```bash
+ifconfig rpine0 up
+/usr/bin/onebox_util rpine0 enable_protocol 3
+/usr/sbin/onebox-protocol-start 4
+hciconfig hci0 up
+systemctl start bluetooth
+```
+
+Verify the interface is now up:
+
+```bash
+hciconfig -a
+bluetoothctl show
+```
+
+The `bluetoothctl show` output should display the controller as `Powered: yes`.
+
+:::note
+`Failed to open RFKILL control device` may appear in the logs — this is a known harmless warning on this kernel and does not affect Bluetooth functionality.
+:::
+
+### Changing the Bluetooth Device Name
+
+By default, the display advertises itself as `imx6qmrsdisp`. To change the Bluetooth device name to something more recognizable:
+
+```bash
+hciconfig hci0 name "MConn Display"
+hciconfig hci0 leadv
+```
+
+The new name will immediately be visible to nearby devices scanning for Bluetooth.
+
+:::caution
+This change is not persistent across reboots. Since the root filesystem is read-only, the name resets after a reboot. To make it persistent, remount the filesystem as writable and set the name in a startup script:
+
+```bash
+mount -o remount,rw /
+```
+:::
+
+### Basic `bluetoothctl` Commands
+
+The `bluetoothctl` interactive shell is the primary tool for managing Bluetooth on the MConn Display. Launch it with:
+
+```bash
+bluetoothctl
+```
+
+Once inside the `bluetoothctl` prompt, the following commands are available:
+
+| Command | Description |
+|---|---|
+| `show` | Show the Bluetooth controller status |
+| `discoverable on` | Make the display visible to other devices |
+| `discoverable off` | Hide the display from scans |
+| `pairable on` | Allow incoming pairing requests |
+| `scan on` | Scan for nearby Bluetooth devices |
+| `scan off` | Stop scanning |
+| `devices` | List discovered devices |
+| `pair <MAC>` | Pair with a specific device |
+| `connect <MAC>` | Connect to a paired device |
+| `disconnect <MAC>` | Disconnect a device |
+| `remove <MAC>` | Remove a paired device |
+| `quit` | Exit bluetoothctl |
+
+### Pairing a Phone or PC
+
+The following steps walk through pairing a phone or PC with the MConn Display.
+
+**Step 1 — Launch bluetoothctl and prepare the display:**
+
+```bash
+bluetoothctl
+```
+
+Then inside the prompt:
+
+```
+discoverable on
+pairable on
+agent on
+default-agent
+scan on
+```
+
+**Step 2 — Initiate pairing from your phone or PC**
+
+On your phone or PC, scan for Bluetooth devices and select `imx6qmrsdisp` (or the custom name you set with `hciconfig`).
+
+**Step 3 — Confirm the passkey**
+
+The display will prompt with a 6-digit passkey:
+
+```
+[agent] Confirm passkey 396482 (yes/no):
+```
+
+Verify that the passkey matches what is shown on your phone, then type `yes` in the SSH terminal and confirm on your phone.
+
+**Step 4 — Authorize services if prompted**
+
+The display may ask to authorize a Bluetooth profile:
+
+```
+[agent] Authorize service 0000111e-0000-1000-8000-00805f9b34fb (yes/no):
+```
+
+Type `yes` to allow. Once pairing is complete, the prompt will change to show the paired device name:
+
+```
+[John Doe's Phone]#
+```
+
+**Step 5 — Exit bluetoothctl**
+
+```
+quit
+```
+
+or press `Ctrl+D`.
+
+:::tip
+To pair from the command line without entering the interactive shell, you can run individual commands directly:
+
+```bash
+bluetoothctl discoverable on
+bluetoothctl pairable on
+bluetoothctl scan on
+```
+:::
+
+### Advanced Configuration
+
+The MConn Display runs **BlueZ 5.50**, which supports a wide range of advanced Bluetooth features including GATT server/client setup, custom BLE advertising, Bluetooth audio profiles, and service authorization policies.
+
+For advanced configuration, refer to the official BlueZ documentation:
+👉 **https://www.bluez.org/documentation/**
+
+Some examples of advanced configurations available through BlueZ:
+
+- **Custom GATT server** — expose custom BLE services and characteristics to connected devices using `btgatt-server`, useful for building BLE-based data interfaces between the display and other embedded systems
+- **BLE advertising data** — customize advertisement packets (device name, manufacturer data, service UUIDs) using `hcitool` or `btmgmt`
+- **Bluetooth audio** — the display includes `bluealsa` and `bluealsa-aplay` for routing audio over Bluetooth to connected speakers or headsets
+- **Packet capture and debugging** — use `btmon` to capture and inspect Bluetooth traffic in real time, or `btsnoop` to record logs for offline analysis
+---
