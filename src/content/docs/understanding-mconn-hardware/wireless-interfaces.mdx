@@ -134,3 +134,218 @@ The `wpa_cli` output should show `wpa_state=COMPLETED` and `ifconfig` should sho
 | `wifi1`   | AP      | `192.168.87.1`       | Display acts as hotspot         |
 | `wifi0`   | Station | Assigned by router   | Display connects to a network   |
 | `eth0`    | Wired   | `192.168.57.1`       | Wired Ethernet                  |
+---
+
+## Bluetooth
+
+The MConn Display uses the **Redpine RS9113** wireless module for Bluetooth, which is the same module for WiFi. The RS9113 supports simultaneous WiFi and Bluetooth operation through its COEX (coexistence) mode. The Bluetooth stack on the display runs **BlueZ 5.50**, the standard Linux Bluetooth protocol stack, exposed through the `hci0` interface over SDIO.
+
+The display supports both **Bluetooth Classic** and **Bluetooth Low Energy (BLE)**, and is managed via the standard `bluetoothctl` command-line tool.
+
+:::note
+The `bluetooth.service` is enabled and starts automatically at boot. However, the underlying `hci0` interface depends on the `onebox` driver stack being initialized first. If Bluetooth is not working after a reboot, follow the steps in the [Starting Bluetooth Manually](#starting-bluetooth-manually) section below.
+:::
+
+### Checking if Bluetooth is Running
+
+To check whether the Bluetooth service is active:
+
+```bash
+systemctl status bluetooth
+```
+
+To check whether the `hci0` interface is up:
+
+```bash
+hciconfig -a
+```
+
+The output should show `UP RUNNING` and the device's Bluetooth MAC address:
+
+```
+hci0:   Type: Primary  Bus: SDIO
+        BD Address: 88:DA:1A:B3:B4:AF
+        UP RUNNING
+        ...
+```
+
+### Starting Bluetooth Manually
+
+If `hciconfig -a` returns no output or the interface is `DOWN`, initialize the Bluetooth stack manually:
+
+```bash
+ifconfig rpine0 up
+/usr/bin/onebox_util rpine0 enable_protocol 3
+/usr/sbin/onebox-protocol-start 4
+hciconfig hci0 up
+systemctl start bluetooth
+```
+
+Verify the interface is now up:
+
+```bash
+hciconfig -a
+bluetoothctl show
+```
+
+The `bluetoothctl show` output should display the controller as `Powered: yes`.
+
+:::tip
+These steps need to be run each time the device boots. To automate this, add the commands to `/usr/bin/startup-app.sh`. Since the root filesystem is read-only, remount it as writable first:
+
+```bash
+mount -o remount,rw /
+nano /usr/bin/startup-app.sh
+```
+
+Add the following lines to the script:
+
+```bash
+ifconfig rpine0 up
+/usr/bin/onebox_util rpine0 enable_protocol 3
+/usr/sbin/onebox-protocol-start 4
+hciconfig hci0 up
+systemctl start bluetooth
+```
+:::
+
+:::note
+`Failed to open RFKILL control device` may appear in the logs — this is a known harmless warning on this kernel and does not affect Bluetooth functionality.
+:::
+
+### Changing the Bluetooth Device Name
+
+By default, the display advertises itself as `imx6qmrsdisp`. To change the Bluetooth device name to something more recognizable:
+
+```bash
+hciconfig hci0 name "MConn Display"
+hciconfig hci0 leadv
+```
+
+The new name will immediately be visible to nearby devices scanning for Bluetooth.
+
+:::tip
+This change is not persistent across reboots — the name, discoverability, and pairing settings all reset after a reboot. To make them persistent, add the following lines to `/usr/bin/startup-app.sh`. Since the root filesystem is read-only, remount it as writable first:
+
+```bash
+mount -o remount,rw /
+nano /usr/bin/startup-app.sh
+```
+
+Add the following lines to the script:
+
+```bash
+hciconfig hci0 name "MConn Display"
+hciconfig hci0 leadv
+bluetoothctl discoverable on
+bluetoothctl pairable on
+```
+:::
+
+### Basic `bluetoothctl` Commands
+
+The `bluetoothctl` interactive shell is the primary tool for managing Bluetooth on the MConn Display. Launch it with:
+
+```bash
+bluetoothctl
+```
+
+Once inside the `bluetoothctl` prompt, the following commands are available:
+
+| Command | Description |
+|---|---|
+| `show` | Show the Bluetooth controller status |
+| `discoverable on` | Make the display visible to other devices |
+| `discoverable off` | Hide the display from scans |
+| `pairable on` | Allow incoming pairing requests |
+| `scan on` | Scan for nearby Bluetooth devices |
+| `scan off` | Stop scanning |
+| `devices` | List discovered devices |
+| `pair <MAC>` | Pair with a specific device |
+| `connect <MAC>` | Connect to a paired device |
+| `disconnect <MAC>` | Disconnect a device |
+| `remove <MAC>` | Remove a paired device |
+| `quit` | Exit bluetoothctl |
+
+### Pairing a Phone or PC
+
+The following steps walk through pairing a phone or PC with the MConn Display.
+
+**Step 1 — Make the display discoverable**
+
+```bash
+bluetoothctl discoverable on
+bluetoothctl pairable on
+```
+
+:::tip
+These settings reset on every reboot. To make them persistent, add them to `/usr/bin/startup-app.sh`:
+```bash
+mount -o remount,rw /
+nano /usr/bin/startup-app.sh
+```
+:::
+
+**Step 2 — Launch bluetoothctl and prepare the display**
+
+```bash
+bluetoothctl
+```
+
+Then inside the prompt:
+
+```
+agent on
+default-agent
+scan on
+```
+
+**Step 3 — Initiate pairing from your phone or PC**
+
+On your phone or PC, scan for Bluetooth devices and select `imx6qmrsdisp` (or the custom name you set with `hciconfig`).
+
+**Step 4 — Confirm the passkey**
+
+The display will prompt with a 6-digit passkey:
+
+```
+[agent] Confirm passkey 396482 (yes/no):
+```
+
+Verify that the passkey matches what is shown on your phone, then type `yes` in the SSH terminal and confirm on your phone.
+
+**Step 5 — Authorize services if prompted**
+
+The display may ask to authorize a Bluetooth profile:
+
+```
+[agent] Authorize service 0000111e-0000-1000-8000-00805f9b34fb (yes/no):
+```
+
+Type `yes` to allow. Once pairing is complete, the prompt will change to show the paired device name:
+
+```
+[John Doe's Phone]#
+```
+
+**Step 6 — Exit bluetoothctl**
+
+```
+quit
+```
+
+or press `Ctrl+D`.
+
+### Advanced Configuration
+
+The MConn Display runs **BlueZ 5.50**, which supports a wide range of advanced Bluetooth features including GATT server/client setup, custom BLE advertising, Bluetooth audio profiles, and service authorization policies.
+
+For advanced configuration, please refer to the official [BlueZ documentation](https://github.com/bluez/bluez/tree/master/doc).
+
+Some examples of advanced configurations available through BlueZ:
+
+- **Custom GATT server** — expose custom BLE services and characteristics to connected devices using `btgatt-server`, useful for building BLE-based data interfaces between the display and other devices
+- **BLE advertising data** — customize advertisement packets (device name, manufacturer data, service UUIDs) using `hcitool` or `btmgmt`
+- **Bluetooth audio** — the display includes `bluealsa` and `bluealsa-aplay` for routing audio over Bluetooth to connected speakers or headsets
+- **Packet capture and debugging** — use `btmon` to capture and inspect Bluetooth traffic in real time, or `btsnoop` to record logs for offline analysis
+---
