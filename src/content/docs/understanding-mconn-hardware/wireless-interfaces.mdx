@@ -190,6 +190,25 @@ bluetoothctl show
 
 The `bluetoothctl show` output should display the controller as `Powered: yes`.
 
+:::tip
+These steps need to be run each time the device boots. To automate this, add the commands to `/usr/bin/startup-app.sh`. Since the root filesystem is read-only, remount it as writable first:
+
+```bash
+mount -o remount,rw /
+nano /usr/bin/startup-app.sh
+```
+
+Add the following lines to the script:
+
+```bash
+ifconfig rpine0 up
+/usr/bin/onebox_util rpine0 enable_protocol 3
+/usr/sbin/onebox-protocol-start 4
+hciconfig hci0 up
+systemctl start bluetooth
+```
+:::
+
 :::note
 `Failed to open RFKILL control device` may appear in the logs — this is a known harmless warning on this kernel and does not affect Bluetooth functionality.
 :::
@@ -205,11 +224,21 @@ hciconfig hci0 leadv
 
 The new name will immediately be visible to nearby devices scanning for Bluetooth.
 
-:::caution
-This change is not persistent across reboots. Since the root filesystem is read-only, the name resets after a reboot. To make it persistent, remount the filesystem as writable and set the name in a startup script:
+:::tip
+This change is not persistent across reboots — the name, discoverability, and pairing settings all reset after a reboot. To make them persistent, add the following lines to `/usr/bin/startup-app.sh`. Since the root filesystem is read-only, remount it as writable first:
 
 ```bash
 mount -o remount,rw /
+nano /usr/bin/startup-app.sh
+```
+
+Add the following lines to the script:
+
+```bash
+hciconfig hci0 name "MConn Display"
+hciconfig hci0 leadv
+bluetoothctl discoverable on
+bluetoothctl pairable on
 ```
 :::
 
@@ -242,7 +271,22 @@ Once inside the `bluetoothctl` prompt, the following commands are available:
 
 The following steps walk through pairing a phone or PC with the MConn Display.
 
-**Step 1 — Launch bluetoothctl and prepare the display:**
+**Step 1 — Make the display discoverable**
+
+```bash
+bluetoothctl discoverable on
+bluetoothctl pairable on
+```
+
+:::tip
+These settings reset on every reboot. To make them persistent, add them to `/usr/bin/startup-app.sh`:
+```bash
+mount -o remount,rw /
+nano /usr/bin/startup-app.sh
+```
+:::
+
+**Step 2 — Launch bluetoothctl and prepare the display**
 
 ```bash
 bluetoothctl
@@ -251,18 +295,16 @@ bluetoothctl
 Then inside the prompt:
 
 ```
-discoverable on
-pairable on
 agent on
 default-agent
 scan on
 ```
 
-**Step 2 — Initiate pairing from your phone or PC**
+**Step 3 — Initiate pairing from your phone or PC**
 
 On your phone or PC, scan for Bluetooth devices and select `imx6qmrsdisp` (or the custom name you set with `hciconfig`).
 
-**Step 3 — Confirm the passkey**
+**Step 4 — Confirm the passkey**
 
 The display will prompt with a 6-digit passkey:
 
@@ -272,7 +314,7 @@ The display will prompt with a 6-digit passkey:
 
 Verify that the passkey matches what is shown on your phone, then type `yes` in the SSH terminal and confirm on your phone.
 
-**Step 4 — Authorize services if prompted**
+**Step 5 — Authorize services if prompted**
 
 The display may ask to authorize a Bluetooth profile:
 
@@ -286,23 +328,13 @@ Type `yes` to allow. Once pairing is complete, the prompt will change to show th
 [John Doe's Phone]#
 ```
 
-**Step 5 — Exit bluetoothctl**
+**Step 6 — Exit bluetoothctl**
 
 ```
 quit
 ```
 
 or press `Ctrl+D`.
-
-:::tip
-To pair from the command line without entering the interactive shell, you can run individual commands directly:
-
-```bash
-bluetoothctl discoverable on
-bluetoothctl pairable on
-bluetoothctl scan on
-```
-:::
 
 ### Advanced Configuration
 
@@ -312,7 +344,7 @@ For advanced configuration, please refer to the official [BlueZ documentation](h
 
 Some examples of advanced configurations available through BlueZ:
 
-- **Custom GATT server** — expose custom BLE services and characteristics to connected devices using `btgatt-server`, useful for building BLE-based data interfaces between the display and other embedded systems
+- **Custom GATT server** — expose custom BLE services and characteristics to connected devices using `btgatt-server`, useful for building BLE-based data interfaces between the display and other devices
 - **BLE advertising data** — customize advertisement packets (device name, manufacturer data, service UUIDs) using `hcitool` or `btmgmt`
 - **Bluetooth audio** — the display includes `bluealsa` and `bluealsa-aplay` for routing audio over Bluetooth to connected speakers or headsets
 - **Packet capture and debugging** — use `btmon` to capture and inspect Bluetooth traffic in real time, or `btsnoop` to record logs for offline analysis
