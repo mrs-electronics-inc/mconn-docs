@@ -1,0 +1,43 @@
+---
+title: Editing the Startup Script
+description: Instructions for modifying the startup script to persist configuration across reboots
+sidebar:
+  order: 1
+---
+
+This section covers how to edit the startup script so that changes can be made to it
+
+## How the Filesystem Works
+
+The MConn Display runs from a read-only root filesystem by default. Any commands you run during a session — such as loading kernel modules, starting services, or configuring interfaces — will not survive a reboot unless they are added to the startup script.
+
+The startup script is located at `/usr/bin/startup-app.sh` and is executed automatically on boot.
+
+## Modifying the Startup Script
+
+Since the root filesystem is read-only, you must remount it as writable before making changes:
+
+```bash
+# Remount the root filesystem as read-write
+mount -o remount,rw /
+```
+
+Then open the startup script in a text editor:
+
+```bash
+# Edit the startup script
+nano /usr/bin/startup-app.sh
+```
+
+Add your commands to the file and save with `Ctrl+O`, and exit with `Ctrl+X`.
+
+Once you're done editing, you can remount the filesystem as read-only again to restore the default protection:
+
+```bash
+# Remount the root filesystem as read-only
+mount -o remount,ro /
+```
+
+:::caution
+If the device loses power during a write operation on a writable root filesystem, there is a small risk of filesystem corruption. Remounting as read-only when you're done is good practice.
+:::
