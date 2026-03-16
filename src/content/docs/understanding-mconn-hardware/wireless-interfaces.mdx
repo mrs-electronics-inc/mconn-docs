@@ -169,7 +169,7 @@ hci0:   Type: Primary  Bus: SDIO
         ...
 ```
 
-### Starting Bluetooth Manually
+### Initializing the Bluetooth Stack
 
 If `hciconfig -a` returns no output or the interface is `DOWN`, initialize the Bluetooth stack manually:
 
@@ -191,22 +191,7 @@ bluetoothctl show
 The `bluetoothctl show` output should display the controller as `Powered: yes`.
 
 :::tip
-These steps need to be run each time the device boots. To automate this, add the commands to `/usr/bin/startup-app.sh`. Since the root filesystem is read-only, remount it as writable first:
-
-```bash
-mount -o remount,rw /
-nano /usr/bin/startup-app.sh
-```
-
-Add the following lines to the script:
-
-```bash
-ifconfig rpine0 up
-/usr/bin/onebox_util rpine0 enable_protocol 3
-/usr/sbin/onebox-protocol-start 4
-hciconfig hci0 up
-systemctl start bluetooth
-```
+These steps need to be run each time the device boots. To automate this, add the commands above to the startup script - please see [Editing the Startup Script](/starting-user-application/editing-startup-script)
 :::
 
 :::note
@@ -225,21 +210,9 @@ hciconfig hci0 leadv
 The new name will immediately be visible to nearby devices scanning for Bluetooth.
 
 :::tip
-This change is not persistent across reboots — the name, discoverability, and pairing settings all reset after a reboot. To make them persistent, add the following lines to `/usr/bin/startup-app.sh`. Since the root filesystem is read-only, remount it as writable first:
+This change is not persistent across reboots — the name, discoverability, and pairing settings all reset after a reboot. 
 
-```bash
-mount -o remount,rw /
-nano /usr/bin/startup-app.sh
-```
-
-Add the following lines to the script:
-
-```bash
-hciconfig hci0 name "MConn Display"
-hciconfig hci0 leadv
-bluetoothctl discoverable on
-bluetoothctl pairable on
-```
+To make them persistent, add the commands above to the startup script - please see [Editing the Startup Script](/starting-user-application/editing-startup-script)
 :::
 
 ### Basic `bluetoothctl` Commands
@@ -279,11 +252,7 @@ bluetoothctl pairable on
 ```
 
 :::tip
-These settings reset on every reboot. To make them persistent, add them to `/usr/bin/startup-app.sh`:
-```bash
-mount -o remount,rw /
-nano /usr/bin/startup-app.sh
-```
+These settings reset on every reboot. To make them persistent, add the commands above to the startup script - please see [Editing the Startup Script](/starting-user-application/editing-startup-script)
 :::
 
 **Step 2 — Launch bluetoothctl and prepare the display**
