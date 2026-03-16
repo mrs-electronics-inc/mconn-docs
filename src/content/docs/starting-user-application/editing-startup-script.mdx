@@ -18,12 +18,14 @@ The startup script is located at `/usr/bin/startup-app.sh` and is executed autom
 Since the root filesystem is read-only, you must remount it as writable before making changes:
 
 ```bash
+# Remount the root filesystem as read-write
 mount -o remount,rw /
 ```
 
 Then open the startup script in a text editor:
 
 ```bash
+# Edit the startup script
 nano /usr/bin/startup-app.sh
 ```
 
@@ -32,6 +34,7 @@ Add your commands to the file and save with `Ctrl+O`, and exit with `Ctrl+X`.
 Once you're done editing, you can remount the filesystem as read-only again to restore the default protection:
 
 ```bash
+# Remount the root filesystem as read-only
 mount -o remount,ro /
 ```
 
