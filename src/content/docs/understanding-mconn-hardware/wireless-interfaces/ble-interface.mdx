@@ -12,7 +12,7 @@ The MConn Display uses the **Redpine RS9113** wireless module for Bluetooth, whi
 The display supports both **Bluetooth Classic** and **Bluetooth Low Energy (BLE)**, and is managed via the standard `bluetoothctl` command-line tool.
 
 :::note
-The `bluetooth.service` is enabled and starts automatically at boot. However, the underlying `hci0` interface depends on the `onebox` driver stack being initialized first. If Bluetooth is not working after a reboot, follow the steps in the [Starting Bluetooth Manually](#starting-bluetooth-manually) section below.
+The `bluetooth.service` is enabled and starts automatically at boot. However, the underlying `hci0` interface depends on the `onebox` driver stack being initialized first. If Bluetooth is not working after a reboot, follow the steps in the [Initializing the Bluetooth Stack](#initializing-the-bluetooth-stack) section below.
 :::
 
 ### Checking if Bluetooth is Running
