@@ -5,6 +5,93 @@ sidebar:
   order: 4
 ---
 
+## GPS
+
+The MConn display includes an onboard GNSS (GPS) module that outputs standard **NMEA data** over a serial interface. You can monitor this data directly using a terminal application on the device.
+
 :::caution
-GPS interface documentation will be added in a future update.
+A GPS antenna **must** be connected to the GPS SMA port on the display before testing. 
+Without an antenna, the module will not receive a valid signal and no valid position data will be available.
 :::
+
+:::note
+For best results:
+- Connect the GPS antenna before powering on the device and wait a few minutes after display boot-up. 
+- Place the antenna near a window or outdoors for better signal reception.
+
+This allows the module time to acquire a satellite fix while you set up testing.
+:::
+
+### Checking if GPS is available
+
+Before testing GPS data, it is helpful to confirm that the GPS serial interface exists and is initialized by the system.
+
+#### 1. Check for the GPS Device
+
+Run the following command:
+
+```bash
+ls /dev/ttymxc*
+```
+
+You should see the entry `/dev/ttymxc1` as a response.
+
+#### 2. Verify the GPS Device is accessible
+
+Check permissions and confirm the device is recognized by running the following command:
+
+```bash
+ls -l /dev/ttymxc1
+```
+
+You should see an output similar to:
+
+```bash
+crw-rw---- 1 root dialout ... /dev/ttymxc1
+```
+
+:::note
+- `c` indicates a character device (serial interface)
+- The device should exist without errors
+:::
+
+### Testing GPS Output
+
+Follow these steps to verify that the GPS module is working correctly.
+
+#### 1. Open a serial terminal to the GPS interface:
+
+```bash
+screen /dev/ttymxc1
+```
+
+This connects to the GPS serial interface and displays incoming data.
+
+#### 2. Monitor the output for NMEA messages:
+
+After opening the terminal, you should start seeing output similar to:
+
+```text
+$GNGLL,...
+$GPGGA,...
+$GNRMC,...
+```
+
+:::note
+These are standard GPS messages containing location and timing data.
+:::
+
+#### 3. Verify GPS Data:
+
+Please check the following:
+- The output is continuously updating (new lines every second)
+- **Latitude (N)** and **Longitude (W)** values are present  
+- Coordinates are reasonably close to your actual location
+
+:::caution
+If the GPS has not acquired a satellite fix yet, some fields may be empty or show invalid data.
+:::
+
+#### 4. Exit the screen terminal:
+
+To exit the `screen` session, press: `Ctrl+A`, then `K`, then `y`
