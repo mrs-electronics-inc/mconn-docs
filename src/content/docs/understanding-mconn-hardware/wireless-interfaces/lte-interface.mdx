@@ -10,7 +10,8 @@ sidebar:
 The MConn Display supports LTE connectivity via an external u-blox cellular module.
 
 :::caution
-An LTE antenna must be connected to the LTE SMA port on the display before testing. Without an antenna, the module will not receive a strong signal and can lead to connectivity issues.
+An LTE antenna must be connected to the LTE SMA port on the display before testing. 
+Without an antenna, the module will not receive a strong signal and can lead to connectivity issues.
 :::
 
 :::tip
@@ -67,12 +68,13 @@ udhcpc -i wwan0
 
 Check if the `wwan0` interface is up and has a valid IPv4 address by running the following command:
 
-```bash
-ip addr show wwan0
-```
 :::note
 For more details, please refer to the [Check if LTE Interface is Initialized](./#check-if-lte-interface-is-initialized) section.
 :::
+
+```bash
+ip addr show wwan0
+```
 
 Once the `wwan0` interface is up, confirm that the LTE connection is fully functional by testing data transfer using a ping request:
 
@@ -91,7 +93,7 @@ PING 8.8.8.8 (8.8.8.8): 56 data bytes
 ```
 
 :::tip
-Please note that when you run `ping`, it will keep running continuously. Press `Ctrl + C` to stop it and see the statistics
+Please note that when you run `ping`, it will keep running continuously. Press `Ctrl+C` to stop it and see the statistics
 :::
 
 ```bash
