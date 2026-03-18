@@ -27,7 +27,25 @@ export default defineConfig({
         },
         {
           label: "Understanding MConn Hardware",
-          autogenerate: { directory: "understanding-mconn-hardware" },
+          items: [
+            { 
+              label: "Inputs and Outputs", link: "/understanding-mconn-hardware/inputs-and-outputs" 
+            },
+            { 
+              label: "Sensors", link: "/understanding-mconn-hardware/sensors" 
+            },
+            { 
+              label: "Embedded Devices", link: "/understanding-mconn-hardware/embedded-devices" 
+            },
+            { 
+              label: "Peripheral Interfaces", link: "/understanding-mconn-hardware/peripheral-interfaces" 
+            },
+            {
+              label: "Wireless Interfaces",
+              autogenerate: {directory: "understanding-mconn-hardware/wireless-interfaces"},
+              collapsed: true,
+            }
+          ]
         },
         {
           label: "MConn Programming",
@@ -49,14 +67,17 @@ export default defineConfig({
               },
             },
           ],
+          collapsed: true,
         },
         {
           label: "Starting User Application",
           autogenerate: { directory: "starting-user-application" },
+          collapsed: true,
         },
         {
           label: "Other",
           autogenerate: { directory: "other" },
+          collapsed: true,
         },
       ],
     }),
