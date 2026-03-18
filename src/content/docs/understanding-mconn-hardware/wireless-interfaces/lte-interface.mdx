@@ -5,6 +5,200 @@ sidebar:
   order: 3
 ---
 
+## LTE
+
+The MConn Display supports LTE connectivity via an external u-blox cellular module.
+
 :::caution
-LTE interface documentation will be added in a future update.
+An LTE antenna must be connected to the LTE SMA port on the display before testing. 
+Without an antenna, the module will not receive a strong signal and can lead to connectivity issues.
+:::
+
+:::tip
+For best results, connect the LTE antenna before powering on the MConn Display.
+:::
+
+### Detecting the LTE Module
+
+Use the following command to verify that the u-blox cellular module is connected and recognized by the system before initializing LTE networking.
+
+```bash
+lsusb
+```
+
+Expected output (example):
+
+```bash
+Bus 001 Device 004: ID 1546:1143 U-Blox AG
+```
+
+### Check if LTE Interface is Initialized
+
+Verify `wwan0` appears and has a valid IP address before proceeding with LTE traffic. Run the following command:
+
+```bash
+ip addr
+```
+
+Look for the `wwan0` interface and check its content. Expected output (example):
+
+```bash
+3: wwan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UNKNOWN group default qlen 1000
+    link/ether 02:1a:7d:5c:3e:9b brd ff:ff:ff:ff:ff:ff
+    inet 10.124.56.23/30 brd 10.124.56.23 scope global wwan0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::1a7d:5cff:fe3e:9b/64 scope link 
+       valid_lft forever preferred_lft forever
+```
+
+:::note
+You should look for the following:
+- `wwan0` is `UP` --> interface is enabled
+- `inet 10.x.x.x/...` --> valid IPv4 address assigned
+- `scope global wwan0` --> confirms it's usable for communication
+:::
+
+### Initialize LTE Interface
+
+If the `wwan0` interface is not initialized, then bring up `wwan0` with DHCP and confirm the interface is active for network use. Run the following command:
+
+```bash
+udhcpc -i wwan0
+```
+
+Check if the `wwan0` interface is up and has a valid IPv4 address by running the following command:
+
+:::note
+For more details, please refer to the [Check if LTE Interface is Initialized](./#check-if-lte-interface-is-initialized) section.
+:::
+
+```bash
+ip addr show wwan0
+```
+
+Once the `wwan0` interface is up, confirm that the LTE connection is fully functional by testing data transfer using a ping request:
+
+```bash
+ping -I wwan0 8.8.8.8
+```
+
+You should see ICMP replies and low packet loss. 
+
+```bash
+PING 8.8.8.8 (8.8.8.8): 56 data bytes
+64 bytes from 8.8.8.8: seq=0 ttl=117 time=45.3 ms
+64 bytes from 8.8.8.8: seq=1 ttl=117 time=42.8 ms
+64 bytes from 8.8.8.8: seq=2 ttl=117 time=44.1 ms
+64 bytes from 8.8.8.8: seq=3 ttl=117 time=43.5 ms
+```
+
+:::tip
+Please note that when you run `ping`, it will keep running continuously. Press `Ctrl+C` to stop it and see the statistics
+:::
+
+```bash
+
+--- 8.8.8.8 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss
+round-trip min/avg/max = 42.8/43.9/45.3 ms
+```
+
+### AT Command Interface
+
+You can also communicate directly with the LTE modem using AT Commands. 
+
+#### Open Two SSH Terminals
+
+To interact with the modem, you will need **two SSH sessions open at the same time**:
+
+- Open **two terminal windows** side-by-side and SSH into the device in both.
+- One terminal will be used to **send commands**.
+- The other terminal will be used to **read responses** from the modem.
+
+**Terminal 1 - Send Commands:**
+
+```bash
+echo -e "AT\r" > /dev/ttyACM0
+```
+
+:::tip
+You can replace `AT` in with any command you want to send.
+:::
+
+**Terminal 2 - Read Responses**
+
+```bash
+cat /dev/ttyACM0
+```
+
+You should see responses such as `OK`.
+
+### Basic Checks
+
+Run the following AT commands from **Terminal 1** and observe the responses in **Terminal 2**:
+
+1. `AT`
+- Verifies communication with the modem.
+- Expected response: `OK`
+
+2. `AT+CPIN?`
+- Checks SIM card status.
+- Expected response: `READY`
+
+3. `AT+CSQ`
+- Displays signal strength.
+- First value indicates signal quality
+- `10–31` = good signal
+- `99` = no signal
+
+4. `AT+CREG?`
+- Checks network registration status.
+- `0,1` = Registered (home network)
+- `0,5` = Registered (roaming)
+- `0,0` = Not registered
+
+### APN Configuration
+
+Set the APN required by your SIM provider:
+
+```text
+AT+CGDCONT=1,"IP","<your_apn>"
+```
+
+Example:
+
+```text
+AT+CGDCONT=1,"IP","spoke-zone.com.attz"
+```
+
+### Attach to Network
+
+Attach the modem to the packet data network:
+
+```text
+AT+CGATT=1
+```
+
+Verify attachment:
+
+```text
+AT+CGATT?
+```
+
+The expected response is `1`.
+
+### Production Configuration
+
+The LTE module is configured during production with the following commands:
+
+```text
+AT+UUSBCONF=2
+AT+CPWROFF
+```
+
+- `AT+UUSBCONF=2` enables USB networking mode
+- `AT+CPWROFF` powers off the modem so the configuration is applied on the next boot
+
+:::tip
+If the LTE interface (`wwan0`) does not appear, reapply these commands and reboot the device.
 :::
