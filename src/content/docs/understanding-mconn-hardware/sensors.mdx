@@ -42,13 +42,17 @@ To find the output of the IMU Sensor in the **Reference App**, navigate to the *
 
 ![IMU Sensor's Ouput in the Reference App](../../../assets/Reference_App_IMU.png)
 
-## Real-Time Cock (RTC)
+## Real-Time Clock (RTC)
 
 The Display has an integrated hardware RTC. The RTC keeps track of the current time when the display is not powered on and re-syncs with the Linux OS when the Display is powered on.
+
+:::note
+The RTC operates in **UTC**. When setting the time with `date -s`, always specify the time in UTC regardless of your local timezone.
+:::
 
 To set up the RTC, enter the following commands in the terminal:
 
 ```shell
-$ date -s "2021-07-22 17:00:00"
-$ hwclock -w 
+date -s "2021-07-22 17:00:00 UTC"
+hwclock -w 
 ```
